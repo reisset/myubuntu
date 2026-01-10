@@ -73,6 +73,19 @@ check_gnome() {
     return 0
 }
 
+# Check if a dependency/command is available
+check_dependency() {
+    local cmd=$1
+    local package=${2:-$cmd}  # Use command name as package name if not provided
+
+    if ! command -v "$cmd" &> /dev/null; then
+        log_error "$cmd is not installed"
+        log_info "Install it with: sudo apt install $package"
+        return 1
+    fi
+    return 0
+}
+
 # Backup dconf settings
 backup_dconf() {
     local path=$1

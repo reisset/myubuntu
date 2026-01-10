@@ -14,6 +14,12 @@ source "$REPO_DIR/scripts/helpers.sh"
 
 log_info "Installing theming configuration..."
 
+# Check dependencies (git is needed for Orchis theme)
+if ! check_dependency git; then
+    log_warn "git not installed - Orchis shell theme installation will be skipped"
+    log_info "Install git with: sudo apt install git"
+fi
+
 # Create backup directory
 mkdir -p "$BACKUP_DIR"
 
@@ -55,7 +61,9 @@ fi
 if [ ! -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
     log_info "Orchis shell theme not found, downloading..."
 
-    if git clone --depth 1 "$ORCHIS_REPO" "$TEMP_DIR" 2>/dev/null; then
+    if ! command -v git &>/dev/null; then
+        log_warn "git not available - skipping Orchis theme download"
+    elif git clone --depth 1 "$ORCHIS_REPO" "$TEMP_DIR" 2>/dev/null; then
         log_info "Installing Orchis-Purple-Dark shell theme..."
         cd "$TEMP_DIR"
 

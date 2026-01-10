@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🔮 Future Plans
 - **Theme switcher** - Omakub-style theme switching between Orchis, Graphite, Marble shell themes
+- **Ctrl+Q to close window** - Add keyboard shortcut for closing current window
 - Webapp pinning to dock
 - Ulauncher extensions bundling
 - Additional GNOME extensions (optional)
@@ -16,6 +17,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.1] - 2026-01-10
 
 ### Fixed
+- **CRITICAL: Uninstaller freeze/crash** - Fixed rapid-fire extension operations overwhelming GNOME Shell
+  - Added 0.5s delays between extension enable operations in uninstaller
+  - Added 0.3s delays between extension disable operations
+  - Added warning message before extension changes
+  - Prevents GNOME Shell crash and session restart (appeared as "reboot")
+- **Installer extension delays** - Added 0.3s delays between all extension operations in installer
+  - Prevents same freeze issue during installation
+  - Improves stability when enabling/disabling extensions
+- **Broken dock icons** - Fixed favorites list to only include installed applications
+  - Added desktop file validation before pinning apps to dock
+  - Warns about skipped apps (e.g., "Skipping spotify.desktop (not installed)")
+  - No more empty/broken dock icons
+- **Backup overwrites on re-install** - Fixed shortcuts installer preserving original backups
+  - Checks if backups exist before creating new ones
+  - Prevents myubuntu settings from replacing original system backups
+  - Uninstall now correctly restores original Ubuntu settings
+- **Stale theme references** - Fixed uninstaller referencing old "Tokyonight-Dark-BL" theme
+  - Updated to "Orchis-Purple-Dark" to match current installer
+  - Fixed help text and cleanup operations
 - **Orchis shell theme not applying** - Fixed theming/install.sh to use `dconf write` instead of `safe_gsettings` for extension schemas
   - Extension schemas are not in system gsettings, causing silent failure
   - Now writes directly to `/org/gnome/shell/extensions/user-theme/name`
@@ -26,12 +46,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Added explicit `switch-to-application-1` through `-5` shortcuts in shell-keybindings.conf
 
 ### Added
+- **Dependency checking** - Added `check_dependency()` helper function to helpers.sh
+  - Extensions installer now checks for curl and python3
+  - Theming installer now checks for git (graceful fallback if missing)
+  - Clear error messages with installation instructions
+- **Desktop file validation** - Added `desktop_file_exists()` function to qol installer
+  - Checks common locations (/usr/share, .local, snap, flatpak)
+  - Dynamically builds dock favorites based on installed apps
 - **Workspace switching shortcuts** - Ctrl+Alt+1-4 for direct workspace navigation
   - Provides dedicated workspace shortcuts without conflicts
   - Configured in wm-keybindings.conf
   - Space Bar still provides visual indicators and click navigation
 
 ### Changed
+- **Version sync** - Updated installer and uninstaller versions to 0.3.1
+  - Both scripts now report consistent version numbers
+  - Improves user experience and version tracking
 - **Shortcut configuration** - Made pinned app shortcuts explicit rather than relying on GNOME defaults
   - shell-keybindings.conf now explicitly defines Super+1-5 for apps
   - wm-keybindings.conf now includes Ctrl+Alt+1-4 for workspaces

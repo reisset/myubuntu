@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.2.0"
+VERSION="0.3.1"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.myubuntu-backup"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
@@ -67,7 +67,7 @@ for arg in "$@"; do
             echo "  shortcuts   - Keyboard shortcuts and keybindings"
             echo "  extensions  - GNOME extensions (disables, doesn't remove)"
             echo "  ulauncher   - Ulauncher application launcher"
-            echo "  theming     - Tokyo Night theme, dark mode, icons, wallpaper"
+            echo "  theming     - Orchis shell theme, dark mode, icons, wallpaper"
             echo "  qol         - Quality of life tweaks (dock, Nautilus, etc.)"
             echo ""
             echo "Examples:"
@@ -185,12 +185,16 @@ uninstall_shortcuts() {
 # Uninstall function: extensions
 uninstall_extensions() {
     log_info "=== Uninstalling extensions ==="
+    log_warn "Desktop may briefly pause while reverting extension changes..."
 
     # Re-enable Ubuntu default extensions
     log_info "Re-enabling Ubuntu dock and default extensions..."
     gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
+    sleep 0.5
     gnome-extensions enable tiling-assistant@ubuntu.com 2>/dev/null || true
+    sleep 0.5
     gnome-extensions enable ding@rastersoft.com 2>/dev/null || true
+    sleep 0.5
 
     # Disable myubuntu extensions
     local extensions=(
@@ -207,6 +211,7 @@ uninstall_extensions() {
         if gnome-extensions list 2>/dev/null | grep -q "$ext"; then
             log_info "Disabling extension: $ext"
             gnome-extensions disable "$ext" 2>/dev/null || true
+            sleep 0.3
         fi
     done
 
@@ -276,9 +281,9 @@ uninstall_theming() {
             sudo apt remove -y papirus-icon-theme
         fi
 
-        local theme_dir="$HOME/.local/share/themes/Tokyonight-Dark-BL"
+        local theme_dir="$HOME/.local/share/themes/Orchis-Purple-Dark"
         if [ -d "$theme_dir" ]; then
-            log_info "Removing Tokyo Night theme..."
+            log_info "Removing Orchis theme..."
             rm -rf "$theme_dir"
         fi
     else

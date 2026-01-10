@@ -23,11 +23,17 @@ fi
 # Create backup directory
 mkdir -p "$BACKUP_DIR"
 
-# Backup current shortcuts before making changes
-log_info "Backing up current shortcuts..."
-backup_dconf "/org/gnome/desktop/wm/keybindings/" "$BACKUP_DIR/wm-keybindings.conf.backup"
-backup_dconf "/org/gnome/settings-daemon/plugins/media-keys/" "$BACKUP_DIR/media-keys.conf.backup"
-backup_dconf "/org/gnome/shell/keybindings/" "$BACKUP_DIR/shell-keybindings.conf.backup"
+# Backup current shortcuts before making changes (only if backups don't already exist)
+if [ -f "$BACKUP_DIR/wm-keybindings.conf.backup" ] && \
+   [ -f "$BACKUP_DIR/media-keys.conf.backup" ] && \
+   [ -f "$BACKUP_DIR/shell-keybindings.conf.backup" ]; then
+    log_info "Existing backups found, preserving original settings"
+else
+    log_info "Backing up current shortcuts..."
+    backup_dconf "/org/gnome/desktop/wm/keybindings/" "$BACKUP_DIR/wm-keybindings.conf.backup"
+    backup_dconf "/org/gnome/settings-daemon/plugins/media-keys/" "$BACKUP_DIR/media-keys.conf.backup"
+    backup_dconf "/org/gnome/shell/keybindings/" "$BACKUP_DIR/shell-keybindings.conf.backup"
+fi
 
 # Apply new shortcuts
 log_info "Applying keyboard shortcuts from configs..."

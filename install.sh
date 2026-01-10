@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 

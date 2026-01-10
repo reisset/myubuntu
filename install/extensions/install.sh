@@ -12,6 +12,15 @@ source "$REPO_DIR/scripts/helpers.sh"
 
 log_info "Installing GNOME extensions..."
 
+# Check dependencies
+if ! check_dependency curl; then
+    return 1
+fi
+
+if ! check_dependency python3; then
+    return 1
+fi
+
 # Extension details
 EXTENSIONS=(
     # Existing
@@ -38,8 +47,11 @@ log_info "Detected GNOME Shell version: $GNOME_VERSION"
 # Disable Ubuntu default extensions (Omakub-style: dock only in overview)
 log_info "Disabling Ubuntu default extensions..."
 gnome-extensions disable ubuntu-dock@ubuntu.com 2>/dev/null || true
+sleep 0.3
 gnome-extensions disable tiling-assistant@ubuntu.com 2>/dev/null || true
+sleep 0.3
 gnome-extensions disable ding@rastersoft.com 2>/dev/null || true
+sleep 0.3
 log_info "Ubuntu dock disabled (dock will only appear in overview)"
 
 # Extension Manager removed - using gnome-extensions CLI only
@@ -76,6 +88,7 @@ install_extension() {
             if ! gnome-extensions info "$ext_uuid" 2>/dev/null | grep -q "State: ENABLED"; then
                 log_info "Enabling $ext_name..."
                 gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
+                sleep 0.3
             fi
 
             return 0
@@ -100,6 +113,7 @@ install_extension() {
 
                         # Enable the extension
                         gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
+                        sleep 0.3
 
                         return 0
                     fi
