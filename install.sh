@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.1.0"
+VERSION="0.2.0"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
@@ -58,8 +58,9 @@ for arg in "$@"; do
             echo ""
             echo "Components:"
             echo "  shortcuts   - Keyboard shortcuts and keybindings"
+            echo "  extensions  - GNOME extensions (User Themes, Blur, AppIndicator)"
             echo "  ulauncher   - Ulauncher application launcher"
-            echo "  theming     - Dark mode, icons, wallpaper"
+            echo "  theming     - Tokyo Night theme, dark mode, icons, wallpaper"
             echo "  qol         - Quality of life tweaks (dock, Nautilus, etc.)"
             echo ""
             echo "Examples:"
@@ -100,7 +101,7 @@ if ! check_gnome; then
 fi
 
 # Determine which components to install
-COMPONENTS=(shortcuts ulauncher theming qol)
+COMPONENTS=(shortcuts extensions ulauncher theming qol)
 
 if [ ${#ONLY_COMPONENTS[@]} -gt 0 ]; then
     COMPONENTS=("${ONLY_COMPONENTS[@]}")
