@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.3.1"
+VERSION="0.3.2"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
@@ -79,10 +79,13 @@ for arg in "$@"; do
 done
 
 # Show banner
-echo "============================================="
-echo "   myubuntu v$VERSION"
-echo "   Ubuntu Desktop Bootstrap"
-echo "============================================="
+echo ""
+echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                               ║${NC}"
+echo -e "${CYAN}║                      myubuntu v$VERSION                          ║${NC}"
+echo -e "${CYAN}║           Lightweight Ubuntu Desktop Bootstrap                ║${NC}"
+echo -e "${CYAN}║                                                               ║${NC}"
+echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # Environment checks
@@ -175,9 +178,11 @@ log_info "Manifest saved to $MANIFEST_FILE"
 
 # Done!
 echo ""
-echo "============================================="
-echo ""
-log_info "Installation complete!"
+echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║                                                               ║${NC}"
+echo -e "${GREEN}║                  Installation Complete! ✓                     ║${NC}"
+echo -e "${GREEN}║                                                               ║${NC}"
+echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 log_info "Summary:"
 log_info "  ✓ Installed ${#COMPONENTS[@]} component(s)"
@@ -194,4 +199,3 @@ log_info "  3. Press Super to see dock and Activities"
 echo ""
 log_info "Enjoy your customized Ubuntu desktop!"
 echo ""
-echo "============================================="

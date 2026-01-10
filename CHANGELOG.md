@@ -14,6 +14,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
 
+## [0.3.2] - 2026-01-10
+
+### Changed
+- **Enhanced installer UX** - Polished intro and completion banners with Unicode box styling
+  - Added CYAN color to helpers.sh for banner styling
+  - Updated install.sh banners with cyan-colored Unicode boxes
+  - Updated uninstall.sh banners to match new style
+  - Green completion boxes with checkmark (✓) for success feedback
+  - More professional and visually appealing terminal output
+
 ## [0.3.1] - 2026-01-10
 
 ### Fixed

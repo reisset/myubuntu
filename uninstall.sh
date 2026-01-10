@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.3.1"
+VERSION="0.3.2"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.myubuntu-backup"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
@@ -86,10 +86,13 @@ for arg in "$@"; do
 done
 
 # Show banner
-echo "============================================="
-echo "   myubuntu v$VERSION - Uninstaller"
-echo "   Reverting Ubuntu Desktop Customizations"
-echo "============================================="
+echo ""
+echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                               ║${NC}"
+echo -e "${CYAN}║                 myubuntu v$VERSION - Uninstaller                 ║${NC}"
+echo -e "${CYAN}║         Reverting Ubuntu Desktop Customizations              ║${NC}"
+echo -e "${CYAN}║                                                               ║${NC}"
+echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # Check if myubuntu is installed
@@ -331,9 +334,11 @@ done
 
 # Done!
 echo ""
-echo "============================================="
-echo ""
-log_info "Uninstall complete!"
+echo -e "${GREEN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║                                                               ║${NC}"
+echo -e "${GREEN}║                   Uninstall Complete! ✓                       ║${NC}"
+echo -e "${GREEN}║                                                               ║${NC}"
+echo -e "${GREEN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 log_info "Summary:"
 log_info "  ✓ Uninstalled ${#COMPONENTS[@]} component(s)"
@@ -356,4 +361,3 @@ fi
 echo ""
 log_info "To reinstall, run: ./install.sh"
 echo ""
-echo "============================================="
