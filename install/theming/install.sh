@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # myubuntu - Theming Installer
-# Applies dark mode, icon theme, and wallpaper
+# Applies Yaru-purple GTK theme, Orchis shell theme, icons, and wallpaper
 
 set -e
 
@@ -17,56 +17,74 @@ log_info "Installing theming configuration..."
 # Create backup directory
 mkdir -p "$BACKUP_DIR"
 
-# Install Papirus icon theme
-if ! dpkg -l | grep -q papirus-icon-theme; then
-    log_info "Installing Papirus icon theme..."
-    sudo apt install -y papirus-icon-theme
-else
-    log_info "Papirus icon theme already installed"
-fi
+# Yaru theme and icons are built into Ubuntu - no installation needed
+log_info "Using Yaru-purple theme (built into Ubuntu)"
 
 # Apply dark mode
 log_info "Enabling dark mode..."
 safe_gsettings org.gnome.desktop.interface color-scheme 'prefer-dark'
 
-# Set accent color (blue)
-log_info "Setting accent color..."
-safe_gsettings org.gnome.desktop.interface accent-color 'blue' || true
+# Set accent color (purple - matches Omakub Tokyo Night aesthetic)
+log_info "Setting accent color to purple..."
+safe_gsettings org.gnome.desktop.interface accent-color 'purple' || true
 
-# Set icon theme
-log_info "Setting Papirus-Dark icon theme..."
-safe_gsettings org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+# Apply Yaru-purple GTK theme
+log_info "Applying Yaru-purple-dark GTK theme..."
+safe_gsettings org.gnome.desktop.interface gtk-theme 'Yaru-purple-dark'
 
-# Install Tokyo Night GTK theme
-THEME_NAME="Tokyonight-Dark-BL"
+# Apply Yaru-purple icon theme
+log_info "Applying Yaru-purple icon theme..."
+safe_gsettings org.gnome.desktop.interface icon-theme 'Yaru-purple'
+
+# Set cursor theme
+log_info "Setting cursor theme..."
+safe_gsettings org.gnome.desktop.interface cursor-theme 'Yaru'
+
+# Install Orchis shell theme
+SHELL_THEME_NAME="Orchis-Purple-Dark"
 THEME_DIR="$HOME/.local/share/themes"
+ORCHIS_REPO="https://github.com/vinceliuice/Orchis-theme.git"
+TEMP_DIR="/tmp/orchis-theme-$$"
 
-if [ ! -d "$THEME_DIR/$THEME_NAME" ]; then
-    log_info "Tokyo Night theme not found, downloading..."
-    source "$SCRIPT_DIR/download-theme.sh" || log_warn "Theme download failed, continuing..."
+if [ ! -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
+    log_info "Orchis shell theme not found, downloading..."
+
+    if git clone --depth 1 "$ORCHIS_REPO" "$TEMP_DIR" 2>/dev/null; then
+        log_info "Installing Orchis-Purple-Dark shell theme..."
+        cd "$TEMP_DIR"
+
+        # Install only purple dark variant with solid tweaks
+        if ./install.sh -t purple -c dark --tweaks solid 2>/dev/null; then
+            log_info "Orchis shell theme installed successfully"
+        else
+            log_warn "Orchis installation script failed, continuing..."
+        fi
+
+        cd - > /dev/null
+        rm -rf "$TEMP_DIR"
+    else
+        log_warn "Failed to clone Orchis theme repository, continuing..."
+        rm -rf "$TEMP_DIR"
+    fi
 else
-    log_info "Tokyo Night theme already installed"
+    log_info "Orchis shell theme already installed"
 fi
 
-# Apply Tokyo Night GTK theme (legacy GTK3 apps)
-if [ -d "$THEME_DIR/$THEME_NAME" ]; then
-    log_info "Applying Tokyo Night GTK theme..."
-    safe_gsettings org.gnome.desktop.interface gtk-theme "$THEME_NAME"
-
-    # Apply Tokyo Night Shell theme (requires User Themes extension)
+# Apply Orchis Shell theme (requires User Themes extension)
+if [ -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
     if gnome-extensions list 2>/dev/null | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; then
-        log_info "Applying Tokyo Night Shell theme..."
-        if safe_gsettings org.gnome.shell.extensions.user-theme name "$THEME_NAME"; then
+        log_info "Applying Orchis shell theme..."
+        if safe_gsettings org.gnome.shell.extensions.user-theme name "$SHELL_THEME_NAME"; then
             log_info "Shell theme applied successfully"
         else
             log_warn "Could not apply shell theme (User Themes extension may not be enabled)"
         fi
     else
         log_warn "User Themes extension not installed - shell theme skipped"
-        log_info "Install extensions component to enable shell theming"
+        log_info "Shell theme will be applied after installing extensions and logging out"
     fi
 else
-    log_warn "Tokyo Night theme not found - skipping theme application"
+    log_warn "Orchis shell theme not found - skipping shell theme application"
 fi
 
 # Set wallpaper
@@ -87,10 +105,13 @@ log_info "Theming configuration complete!"
 log_info ""
 log_info "Applied settings:"
 log_info "  - Dark mode enabled"
-log_info "  - Accent color: Blue"
-log_info "  - GTK theme: Tokyo Night ($THEME_NAME)"
-log_info "  - Shell theme: Tokyo Night (if User Themes extension installed)"
-log_info "  - Icon theme: Papirus-Dark"
+log_info "  - Accent color: Purple"
+log_info "  - GTK theme: Yaru-purple-dark (built into Ubuntu)"
+log_info "  - Shell theme: Orchis-Purple-Dark (requires User Themes extension)"
+log_info "  - Icon theme: Yaru-purple (built into Ubuntu)"
+log_info "  - Cursor theme: Yaru"
 log_info "  - Wallpaper: $(basename "$WALLPAPER")"
 log_info ""
-log_info "Note: Shell theme requires User Themes extension to be enabled"
+log_info "Notes:"
+log_info "  - Shell theme requires User Themes extension to be enabled"
+log_info "  - Changes may require logging out and back in to take full effect"

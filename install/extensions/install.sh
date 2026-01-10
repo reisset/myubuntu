@@ -42,17 +42,8 @@ gnome-extensions disable tiling-assistant@ubuntu.com 2>/dev/null || true
 gnome-extensions disable ding@rastersoft.com 2>/dev/null || true
 log_info "Ubuntu dock disabled (dock will only appear in overview)"
 
-# Install Extension Manager (flatpak)
-if ! flatpak list | grep -q "com.mattjakeman.ExtensionManager"; then
-    log_info "Installing Extension Manager (flatpak)..."
-    if flatpak install -y flathub com.mattjakeman.ExtensionManager 2>/dev/null; then
-        log_info "Extension Manager installed"
-    else
-        log_warn "Could not install Extension Manager flatpak (non-fatal)"
-    fi
-else
-    log_info "Extension Manager already installed"
-fi
+# Extension Manager removed - using gnome-extensions CLI only
+# Users can use gnome-extensions-app (built into Ubuntu) for GUI management
 
 # Install gnome-shell-extension-prefs for CLI management
 if ! dpkg -l | grep -q gnome-shell-extension-prefs; then
@@ -67,48 +58,61 @@ install_extension() {
     local ext_uuid=$1
     local ext_name=$2
     local ext_id=$3
+    local max_attempts=2
+    local attempt=1
 
-    log_info "Installing $ext_name ($ext_uuid)..."
-
-    # Check if already installed
-    if gnome-extensions list 2>/dev/null | grep -q "^${ext_uuid}$"; then
-        log_info "$ext_name is already installed"
-
-        # Enable if disabled
-        if ! gnome-extensions info "$ext_uuid" 2>/dev/null | grep -q "State: ENABLED"; then
-            log_info "Enabling $ext_name..."
-            gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name"
+    while [ $attempt -le $max_attempts ]; do
+        if [ $max_attempts -eq 1 ]; then
+            log_info "Installing $ext_name..."
+        else
+            log_info "Installing $ext_name (attempt $attempt/$max_attempts)..."
         fi
 
-        return 0
-    fi
+        # Check if already installed
+        if gnome-extensions list 2>/dev/null | grep -q "^${ext_uuid}$"; then
+            log_info "$ext_name is already installed"
 
-    # Try to install via gnome-extensions (requires extension zip)
-    log_info "Downloading $ext_name from extensions.gnome.org..."
-
-    # Download extension zip
-    local temp_zip="/tmp/${ext_uuid}.zip"
-    local download_url="https://extensions.gnome.org/download-extension/${ext_uuid}.shell-extension.zip?version_tag=${GNOME_VERSION}"
-
-    if curl -Lfs -o "$temp_zip" "$download_url"; then
-        log_info "Installing $ext_name..."
-        if gnome-extensions install --force "$temp_zip" 2>/dev/null; then
-            log_info "$ext_name installed successfully"
-            rm -f "$temp_zip"
-
-            # Enable the extension
-            log_info "Enabling $ext_name..."
-            gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
+            # Enable if disabled
+            if ! gnome-extensions info "$ext_uuid" 2>/dev/null | grep -q "State: ENABLED"; then
+                log_info "Enabling $ext_name..."
+                gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
+            fi
 
             return 0
-        else
-            log_warn "Failed to install $ext_name via CLI"
-            rm -f "$temp_zip"
         fi
-    else
-        log_warn "Failed to download $ext_name"
-    fi
 
+        # Query API for download URL
+        local info_url="https://extensions.gnome.org/extension-info/?uuid=${ext_uuid}&shell_version=${GNOME_VERSION}"
+        local ext_info=$(curl -sf "$info_url")
+
+        if [ -n "$ext_info" ]; then
+            # Parse download_url using Python (guaranteed on Ubuntu)
+            local download_url=$(echo "$ext_info" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('download_url',''))" 2>/dev/null)
+
+            if [ -n "$download_url" ]; then
+                download_url="https://extensions.gnome.org${download_url}"
+                local temp_zip="/tmp/${ext_uuid}.zip"
+
+                if curl -Lfs -o "$temp_zip" "$download_url"; then
+                    if gnome-extensions install --force "$temp_zip" 2>/dev/null; then
+                        log_info "$ext_name installed successfully"
+                        rm -f "$temp_zip"
+
+                        # Enable the extension
+                        gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
+
+                        return 0
+                    fi
+                    rm -f "$temp_zip"
+                fi
+            fi
+        fi
+
+        ((attempt++))
+        [ $attempt -le $max_attempts ] && sleep 2
+    done
+
+    log_warn "Failed to install $ext_name after $max_attempts attempts"
     return 1
 }
 
@@ -137,12 +141,12 @@ if [ ${#FAILED_EXTENSIONS[@]} -eq 0 ]; then
 else
     log_warn "Some extensions could not be installed automatically."
     echo ""
-    log_info "You can install them manually via Extension Manager:"
-    log_info "  1. Open Extension Manager: flatpak run com.mattjakeman.ExtensionManager"
-    log_info "  2. Search for and install the following:"
+    log_info "You can install them manually:"
+    log_info "  1. Open GNOME Extensions app (gnome-extensions-app)"
+    log_info "  2. Or visit the following URLs and install via browser:"
     for failed in "${FAILED_EXTENSIONS[@]}"; do
         IFS='|' read -r ext_name ext_id <<< "$failed"
-        echo "     - $ext_name (https://extensions.gnome.org/extension/$ext_id/)"
+        echo "     - $ext_name: https://extensions.gnome.org/extension/$ext_id/"
     done
 fi
 
@@ -156,4 +160,4 @@ echo ""
 log_info "Notes:"
 log_info "  - Extensions may require logging out and back in to take effect"
 log_info "  - You can manage extensions via: gnome-extensions-app"
-log_info "  - Or use Extension Manager: flatpak run com.mattjakeman.ExtensionManager"
+log_info "  - Or via browser: https://extensions.gnome.org/local/"

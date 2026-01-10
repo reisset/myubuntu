@@ -7,34 +7,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- **Omakub-inspired GNOME setup** - Emulates Omakub's desktop configuration
-  - Ubuntu dock disabled - dock only appears in Activities overview (press Super)
-  - 4 new GNOME extensions: Just Perfection, Tactile, Space Bar, Alphabetical App Grid
-  - Extension configuration script with Omakub settings (animation speed, blur effects, etc.)
-  - Tactile window tiling (Super+T for grid-based positioning)
-  - Center new windows setting
-- **Uninstall script** (`uninstall.sh`) - Revert myubuntu customizations
-  - Restores settings from backups when available
-  - Resets all settings to Ubuntu defaults
-  - Re-enables ubuntu-dock on uninstall
-  - Supports `--only`, `--skip`, `--dry-run` flags (same as installer)
-  - Optional package removal with `--remove-packages`
-  - Disables GNOME extensions (doesn't remove them)
+- **Orchis-Purple-Dark shell theme** - Differentiates from Omakub with polished r/unixporn aesthetic
+- **Extension retry logic** - 2 download attempts per extension with proper error handling
+- **Theme switcher (planned)** - Future Omakub-style theme switching between Orchis, Graphite, Marble
 
 ### Changed
-- **Extensions component** - Now disables Ubuntu default extensions (ubuntu-dock, tiling-assistant, ding)
-- **QoL component** - Removed obsolete dock settings (no longer needed with ubuntu-dock disabled)
-- **Documentation** - Added Design Philosophy section explaining Omakub alignment
+- **Extension downloads** - Fixed API URL format, now queries extension-info endpoint first
+  - Removed flatpak dependency entirely (uses gnome-extensions CLI only)
+  - Uses Python3 for JSON parsing (guaranteed on Ubuntu)
+  - Manual install instructions now reference gnome-extensions-app (built-in)
+- **Theming overhaul** - Switched from Tokyo Night to Yaru + Orchis
+  - GTK theme: Yaru-purple-dark (built into Ubuntu, no download needed)
+  - Icon theme: Yaru-purple (built into Ubuntu, replaces Papirus)
+  - Shell theme: Orchis-Purple-Dark (downloaded from vinceliuice/Orchis-theme)
+  - Accent color: Purple (matches Omakub Tokyo Night aesthetic)
+  - Cursor theme: Yaru
+  - Removed Tokyo Night GTK theme download (variant didn't exist in upstream repo)
+- **Documentation** - Updated CLAUDE.md to reflect new theming approach
 
 ### Fixed
-- **Uninstaller wallpaper reset** - Wallpaper now correctly resets to Ubuntu default instead of staying blank
-- **Uninstaller script exit** - Fixed script exiting early when accent-color key doesn't exist (added `|| true`)
-- **Ulauncher positioning issue** - Ulauncher now starts as daemon immediately after install, fixing centering issues on Wayland
-- **Wallpaper not applied** - Fixed theming script exiting early when accent-color setting failed (Ubuntu 24.04 doesn't have this key). Added `|| true` to allow script to continue to wallpaper section.
-- **Theme download script** - Changed from `bash` to `source` to fix return statement errors, added graceful failure handling
+- **Extension installation failures** - All 7 extensions now install correctly (was 0/7, now 7/7)
+- **Tokyo Night theme not found** - Replaced with working Yaru-purple + Orchis combination
 
-### Known Issues
-- Tokyo Night theme download fails - "Tokyonight-Dark-BL" variant not found in upstream repository. Theme installation is skipped gracefully.
+### Removed
+- `install/theming/download-theme.sh` - No longer needed with Yaru built-in themes
+- Flatpak/Extension Manager installation - Simplified to CLI-only approach
+- Papirus icon theme dependency - Using built-in Yaru-purple instead
 
 ## [0.2.0] - 2026-01-10
 
