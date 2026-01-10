@@ -31,7 +31,7 @@ safe_gsettings org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 # Set accent color (blue)
 log_info "Setting accent color..."
-safe_gsettings org.gnome.desktop.interface accent-color 'blue'
+safe_gsettings org.gnome.desktop.interface accent-color 'blue' || true
 
 # Set icon theme
 log_info "Setting Papirus-Dark icon theme..."
@@ -43,7 +43,7 @@ THEME_DIR="$HOME/.local/share/themes"
 
 if [ ! -d "$THEME_DIR/$THEME_NAME" ]; then
     log_info "Tokyo Night theme not found, downloading..."
-    bash "$SCRIPT_DIR/download-theme.sh"
+    source "$SCRIPT_DIR/download-theme.sh" || log_warn "Theme download failed, continuing..."
 else
     log_info "Tokyo Night theme already installed"
 fi

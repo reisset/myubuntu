@@ -16,7 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - **Ulauncher positioning issue** - Ulauncher now starts as daemon immediately after install, fixing centering issues on Wayland
-- **Wallpaper not applied** - Fixed gsettings quoting bug that prevented wallpaper from being set
+- **Wallpaper not applied** - Fixed theming script exiting early when accent-color setting failed (Ubuntu 24.04 doesn't have this key). Added `|| true` to allow script to continue to wallpaper section.
+- **Theme download script** - Changed from `bash` to `source` to fix return statement errors, added graceful failure handling
+
+### Known Issues
+- Tokyo Night theme download fails - "Tokyonight-Dark-BL" variant not found in upstream repository. Theme installation is skipped gracefully.
 
 ## [0.2.0] - 2026-01-10
 
