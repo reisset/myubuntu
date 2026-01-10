@@ -1,0 +1,10 @@
+# Working docs (local only)
+CLAUDE.md
+MYUBUNTU_SPEC.md
+extras.md
+
+# Backup directory
+.myubuntu-backup/
+
+# Installation manifest
+.myubuntu-manifest.txt
