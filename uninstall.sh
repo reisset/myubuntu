@@ -186,10 +186,21 @@ uninstall_shortcuts() {
 uninstall_extensions() {
     log_info "=== Uninstalling extensions ==="
 
+    # Re-enable Ubuntu default extensions
+    log_info "Re-enabling Ubuntu dock and default extensions..."
+    gnome-extensions enable ubuntu-dock@ubuntu.com 2>/dev/null || true
+    gnome-extensions enable tiling-assistant@ubuntu.com 2>/dev/null || true
+    gnome-extensions enable ding@rastersoft.com 2>/dev/null || true
+
+    # Disable myubuntu extensions
     local extensions=(
         "user-theme@gnome-shell-extensions.gcampax.github.com"
         "blur-my-shell@aunetx"
         "appindicatorsupport@rgcjonas.gmail.com"
+        "just-perfection-desktop@just-perfection"
+        "tactile@lundal.io"
+        "space-bar@luchrioh"
+        "AlphabeticalAppGrid@stuarthayhurst"
     )
 
     for ext in "${extensions[@]}"; do
@@ -199,7 +210,7 @@ uninstall_extensions() {
         fi
     done
 
-    log_info "Extensions disabled (not removed)"
+    log_info "Extensions disabled, Ubuntu dock restored"
     log_info "To remove extensions entirely, delete from ~/.local/share/gnome-shell/extensions/"
 }
 
@@ -244,12 +255,14 @@ uninstall_theming() {
     safe_gsettings org.gnome.desktop.interface color-scheme 'default'
     safe_gsettings org.gnome.desktop.interface gtk-theme 'Yaru'
     safe_gsettings org.gnome.desktop.interface icon-theme 'Yaru'
-    safe_gsettings org.gnome.desktop.interface accent-color 'orange'
+    safe_gsettings org.gnome.desktop.interface accent-color 'orange' || true
 
-    # Reset wallpaper to Ubuntu default
-    gsettings reset org.gnome.desktop.background picture-uri 2>/dev/null || true
-    gsettings reset org.gnome.desktop.background picture-uri-dark 2>/dev/null || true
-    gsettings reset org.gnome.desktop.background picture-options 2>/dev/null || true
+    # Set Ubuntu default wallpaper explicitly
+    log_info "Resetting wallpaper to Ubuntu default..."
+    UBUNTU_WALLPAPER="file:///usr/share/backgrounds/ubuntu-wallpaper-d.png"
+    safe_gsettings org.gnome.desktop.background picture-uri "$UBUNTU_WALLPAPER"
+    safe_gsettings org.gnome.desktop.background picture-uri-dark "$UBUNTU_WALLPAPER"
+    safe_gsettings org.gnome.desktop.background picture-options 'zoom'
 
     # Reset shell theme if User Themes extension is installed
     if gsettings list-schemas | grep -q "org.gnome.shell.extensions.user-theme"; then
@@ -278,14 +291,6 @@ uninstall_theming() {
 # Uninstall function: qol
 uninstall_qol() {
     log_info "=== Uninstalling qol tweaks ==="
-
-    # Reset dock settings
-    log_info "Resetting dock settings..."
-    if gsettings list-schemas | grep -q "org.gnome.shell.extensions.dash-to-dock"; then
-        safe_gsettings org.gnome.shell.extensions.dash-to-dock dock-fixed 'true'
-        safe_gsettings org.gnome.shell.extensions.dash-to-dock autohide 'false'
-        safe_gsettings org.gnome.shell.extensions.dash-to-dock intellihide 'true'
-    fi
 
     # Reset favorite apps to Ubuntu defaults
     log_info "Resetting pinned apps..."

@@ -7,14 +7,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- **Omakub-inspired GNOME setup** - Emulates Omakub's desktop configuration
+  - Ubuntu dock disabled - dock only appears in Activities overview (press Super)
+  - 4 new GNOME extensions: Just Perfection, Tactile, Space Bar, Alphabetical App Grid
+  - Extension configuration script with Omakub settings (animation speed, blur effects, etc.)
+  - Tactile window tiling (Super+T for grid-based positioning)
+  - Center new windows setting
 - **Uninstall script** (`uninstall.sh`) - Revert myubuntu customizations
   - Restores settings from backups when available
   - Resets all settings to Ubuntu defaults
+  - Re-enables ubuntu-dock on uninstall
   - Supports `--only`, `--skip`, `--dry-run` flags (same as installer)
   - Optional package removal with `--remove-packages`
   - Disables GNOME extensions (doesn't remove them)
 
+### Changed
+- **Extensions component** - Now disables Ubuntu default extensions (ubuntu-dock, tiling-assistant, ding)
+- **QoL component** - Removed obsolete dock settings (no longer needed with ubuntu-dock disabled)
+- **Documentation** - Added Design Philosophy section explaining Omakub alignment
+
 ### Fixed
+- **Uninstaller wallpaper reset** - Wallpaper now correctly resets to Ubuntu default instead of staying blank
+- **Uninstaller script exit** - Fixed script exiting early when accent-color key doesn't exist (added `|| true`)
 - **Ulauncher positioning issue** - Ulauncher now starts as daemon immediately after install, fixing centering issues on Wayland
 - **Wallpaper not applied** - Fixed theming script exiting early when accent-color setting failed (Ubuntu 24.04 doesn't have this key). Added `|| true` to allow script to continue to wallpaper section.
 - **Theme download script** - Changed from `bash` to `source` to fix return statement errors, added graceful failure handling

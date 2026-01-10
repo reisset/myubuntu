@@ -9,9 +9,10 @@ A simple, transparent script to apply personal customizations to a fresh Ubuntu 
 **myubuntu** transforms a fresh Ubuntu GNOME installation into a personalized, productive desktop environment by applying:
 
 - **Keyboard Shortcuts** - Custom keybindings including Super+Space for Ulauncher
+- **GNOME Extensions** - Omakub-inspired setup with Just Perfection, Tactile tiling, Space Bar, and more
 - **Ulauncher** - Fast application launcher with Wayland support
-- **Theming** - Dark mode, Papirus icons, custom wallpaper
-- **Quality of Life** - Auto-hide dock, pinned apps, night light, Nautilus tweaks
+- **Theming** - Dark mode, Tokyo Night theme, Papirus icons, custom wallpaper
+- **Quality of Life** - Dock in overview only, pinned apps, night light, centered windows, Nautilus tweaks
 
 ## Quick Start
 
@@ -46,6 +47,20 @@ Applies custom GNOME keybindings from dconf config files. Includes Super+Space f
 ./install/shortcuts/export.sh
 ```
 
+### GNOME Extensions
+
+Installs and configures 7 GNOME Shell extensions with Omakub-inspired settings:
+
+- **User Themes** - Custom shell theme support
+- **Blur my Shell** - Blur effects on overview and dash
+- **AppIndicator** - System tray icon support
+- **Just Perfection** - UI refinements (2x animation speed, workspace indicators)
+- **Tactile** - Window tiling grid (Super+T to activate)
+- **Space Bar** - Workspace indicators in top bar
+- **Alphabetical App Grid** - Auto-sort applications A-Z
+
+**Omakub-style dock behavior:** Disables ubuntu-dock so the dock only appears in the Activities overview (press Super key).
+
 ### Ulauncher
 
 Installs Ulauncher from official PPA with Wayland support (wmctrl) and file preview support (gnome-sushi).
@@ -57,14 +72,16 @@ Installs Ulauncher from official PPA with Wayland support (wmctrl) and file prev
 ### Theming
 
 - Enables system-wide dark mode
+- Tokyo Night GTK + Shell theme
 - Installs and sets Papirus-Dark icon theme
 - Sets custom wallpaper (bundled)
 - Blue accent color
 
 ### Quality of Life
 
-- **Dock**: Auto-hide, bottom position, Omakub-style behavior
+- **Dock**: Only visible in overview (press Super), Omakub-style
 - **Pinned Apps**: Brave, VS Code, Spotify, Files, Obsidian
+- **Windows**: Center new windows on screen
 - **Battery**: Show percentage in top bar
 - **Night Light**: Enabled by default
 - **Nautilus**: List view, sensible defaults
@@ -158,6 +175,8 @@ myubuntu/
 - **Manifest**: Installation manifest saved to `~/.myubuntu-manifest.txt`
 
 ## Philosophy
+
+This project emulates [Omakub](https://omakub.org/)'s GNOME desktop setup, but without the pre-configured applications. We adopt Omakub's extension selections, dock behavior (hidden on desktop, visible in overview), and UI refinements, while customizing pinned apps, theming, and shortcuts to personal preferences.
 
 - **Modular**: Each component is independent and optional
 - **Learnable**: Simple shell scripts, easy to understand and modify

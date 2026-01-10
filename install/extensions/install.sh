@@ -14,9 +14,15 @@ log_info "Installing GNOME extensions..."
 
 # Extension details
 EXTENSIONS=(
+    # Existing
     "user-theme@gnome-shell-extensions.gcampax.github.com|User Themes|19"
     "blur-my-shell@aunetx|Blur my Shell|3193"
     "appindicatorsupport@rgcjonas.gmail.com|AppIndicator|615"
+    # New (Omakub-inspired)
+    "just-perfection-desktop@just-perfection|Just Perfection|3843"
+    "tactile@lundal.io|Tactile|4548"
+    "space-bar@luchrioh|Space Bar|5090"
+    "AlphabeticalAppGrid@stuarthayhurst|Alphabetical App Grid|4238"
 )
 
 # Check if GNOME Shell is available
@@ -28,6 +34,13 @@ fi
 # Get GNOME Shell version
 GNOME_VERSION=$(gnome-shell --version | grep -oP '\d+' | head -n 1)
 log_info "Detected GNOME Shell version: $GNOME_VERSION"
+
+# Disable Ubuntu default extensions (Omakub-style: dock only in overview)
+log_info "Disabling Ubuntu default extensions..."
+gnome-extensions disable ubuntu-dock@ubuntu.com 2>/dev/null || true
+gnome-extensions disable tiling-assistant@ubuntu.com 2>/dev/null || true
+gnome-extensions disable ding@rastersoft.com 2>/dev/null || true
+log_info "Ubuntu dock disabled (dock will only appear in overview)"
 
 # Install Extension Manager (flatpak)
 if ! flatpak list | grep -q "com.mattjakeman.ExtensionManager"; then
@@ -131,6 +144,12 @@ else
         IFS='|' read -r ext_name ext_id <<< "$failed"
         echo "     - $ext_name (https://extensions.gnome.org/extension/$ext_id/)"
     done
+fi
+
+# Configure extensions
+echo ""
+if [ -f "$SCRIPT_DIR/configure.sh" ]; then
+    bash "$SCRIPT_DIR/configure.sh"
 fi
 
 echo ""
