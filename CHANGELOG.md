@@ -4,6 +4,20 @@ All notable changes to myubuntu will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- **Uninstall script** (`uninstall.sh`) - Revert myubuntu customizations
+  - Restores settings from backups when available
+  - Resets all settings to Ubuntu defaults
+  - Supports `--only`, `--skip`, `--dry-run` flags (same as installer)
+  - Optional package removal with `--remove-packages`
+  - Disables GNOME extensions (doesn't remove them)
+
+### Fixed
+- **Ulauncher positioning issue** - Ulauncher now starts as daemon immediately after install, fixing centering issues on Wayland
+- **Wallpaper not applied** - Fixed gsettings quoting bug that prevented wallpaper from being set
+
 ## [0.2.0] - 2026-01-10
 
 ### Added

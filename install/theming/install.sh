@@ -74,8 +74,8 @@ if [ -f "$WALLPAPER" ]; then
     log_info "Setting wallpaper..."
     WALLPAPER_URI="file://$(realpath "$WALLPAPER")"
 
-    safe_gsettings org.gnome.desktop.background picture-uri "'$WALLPAPER_URI'"
-    safe_gsettings org.gnome.desktop.background picture-uri-dark "'$WALLPAPER_URI'"
+    safe_gsettings org.gnome.desktop.background picture-uri "$WALLPAPER_URI"
+    safe_gsettings org.gnome.desktop.background picture-uri-dark "$WALLPAPER_URI"
     safe_gsettings org.gnome.desktop.background picture-options 'zoom'
 
     log_info "Wallpaper set to: $WALLPAPER"

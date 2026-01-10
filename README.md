@@ -88,6 +88,29 @@ Installs Ulauncher from official PPA with Wayland support (wmctrl) and file prev
 ./install.sh --no-confirm
 ```
 
+## Uninstalling
+
+```bash
+# Uninstall everything (revert to Ubuntu defaults)
+./uninstall.sh
+
+# Uninstall specific components
+./uninstall.sh --only=shortcuts,theming
+
+# Preview what would be uninstalled
+./uninstall.sh --dry-run
+
+# Uninstall and remove packages (Ulauncher, Papirus, etc.)
+./uninstall.sh --remove-packages
+```
+
+The uninstall script:
+- Restores settings from `~/.myubuntu-backup/` when available
+- Resets other settings to Ubuntu defaults
+- Disables GNOME extensions (doesn't remove them)
+- Optionally removes installed packages with `--remove-packages`
+- Preserves config directories (`~/.config/ulauncher`, etc.) for manual cleanup
+
 ## Customization
 
 ### Changing Pinned Apps
@@ -144,11 +167,10 @@ myubuntu/
 
 ## Future Plans
 
-- GNOME extensions support (User Themes, AppIndicator)
-- Full Tokyo Night GTK theme
-- Uninstall script
 - Webapp pinning to dock
 - Ulauncher extensions bundling
+- Cross-machine config sync workflow
+- Additional GNOME extensions (optional)
 
 ## Related Projects
 
