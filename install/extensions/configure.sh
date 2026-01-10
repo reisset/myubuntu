@@ -72,6 +72,9 @@ ext_gsettings "blur-my-shell@aunetx" \
 log_info "Configuring Space Bar..."
 ext_gsettings "space-bar@luchrioh" \
     "org.gnome.shell.extensions.space-bar.behavior" "smart-workspace-names" "false"
+# Disable Space Bar's Super+1-9 shortcuts (conflicts with pinned app launching)
+ext_gsettings "space-bar@luchrioh" \
+    "org.gnome.shell.extensions.space-bar.shortcuts" "enable-activate-workspace-shortcuts" "false"
 
 # Alphabetical App Grid - Sort apps A-Z
 log_info "Configuring Alphabetical App Grid..."

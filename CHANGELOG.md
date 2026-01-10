@@ -13,6 +13,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
 
+## [0.3.1] - 2026-01-10
+
+### Fixed
+- **Orchis shell theme not applying** - Fixed theming/install.sh to use `dconf write` instead of `safe_gsettings` for extension schemas
+  - Extension schemas are not in system gsettings, causing silent failure
+  - Now writes directly to `/org/gnome/shell/extensions/user-theme/name`
+  - Theme now applies correctly after installation
+- **Keyboard shortcut conflict** - Super+1,2,3... now exclusively launches pinned apps (no workspace switching)
+  - Space Bar extension's workspace shortcuts (`enable-activate-workspace-shortcuts`) disabled by default
+  - Eliminates conflict between pinned app launching and workspace switching
+  - Added explicit `switch-to-application-1` through `-5` shortcuts in shell-keybindings.conf
+
+### Added
+- **Workspace switching shortcuts** - Ctrl+Alt+1-4 for direct workspace navigation
+  - Provides dedicated workspace shortcuts without conflicts
+  - Configured in wm-keybindings.conf
+  - Space Bar still provides visual indicators and click navigation
+
+### Changed
+- **Shortcut configuration** - Made pinned app shortcuts explicit rather than relying on GNOME defaults
+  - shell-keybindings.conf now explicitly defines Super+1-5 for apps
+  - wm-keybindings.conf now includes Ctrl+Alt+1-4 for workspaces
+
 ## [0.3.0] - 2026-01-10
 
 ### Added

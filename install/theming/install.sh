@@ -80,11 +80,9 @@ fi
 if [ -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
     if gnome-extensions list --enabled 2>/dev/null | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; then
         log_info "Applying Orchis shell theme..."
-        if safe_gsettings org.gnome.shell.extensions.user-theme name "$SHELL_THEME_NAME"; then
-            log_info "Shell theme applied successfully"
-        else
-            log_warn "Could not apply shell theme (User Themes extension may not be enabled)"
-        fi
+        # Use dconf directly for extension schemas (more reliable than gsettings)
+        dconf write /org/gnome/shell/extensions/user-theme/name "'$SHELL_THEME_NAME'"
+        log_info "Shell theme applied successfully"
     else
         log_warn "User Themes extension installed but not yet active"
         log_info "Shell theme ($SHELL_THEME_NAME) will apply automatically after logout/login"
