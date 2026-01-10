@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.2.0"
+VERSION="0.3.0"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
@@ -186,7 +186,10 @@ log_info "  ✓ Manifest saved to $MANIFEST_FILE"
 echo ""
 log_info "Next steps:"
 log_info "  1. Log out and log back in for all changes to take effect"
-log_info "  2. Test Super+Space to open Ulauncher"
+log_info "  2. After login, the following will be active:"
+log_info "     - GNOME extensions (Space Bar workspaces, Just Perfection, etc.)"
+log_info "     - Shell theme (Orchis-Purple-Dark)"
+log_info "     - Ulauncher launcher (Super+Space)"
 log_info "  3. Press Super to see dock and Activities"
 echo ""
 log_info "Enjoy your customized Ubuntu desktop!"

@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### 🔮 Future Plans
+- **Theme switcher** - Omakub-style theme switching between Orchis, Graphite, Marble shell themes
+- Webapp pinning to dock
+- Ulauncher extensions bundling
+- Additional GNOME extensions (optional)
+- Cross-machine config sync workflow
+
+## [0.3.0] - 2026-01-10
+
 ### Added
-- **Orchis-Purple-Dark shell theme** - Differentiates from Omakub with polished r/unixporn aesthetic
+- **Orchis-Purple-Dark shell theme** - Polished r/unixporn aesthetic, differentiates from Omakub
 - **Extension retry logic** - 2 download attempts per extension with proper error handling
-- **Theme switcher (planned)** - Future Omakub-style theme switching between Orchis, Graphite, Marble
+- **sassc pre-installation** - Prevents interactive prompts during Orchis theme installation
 
 ### Changed
 - **Extension downloads** - Fixed API URL format, now queries extension-info endpoint first
@@ -22,17 +31,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Shell theme: Orchis-Purple-Dark (downloaded from vinceliuice/Orchis-theme)
   - Accent color: Purple (matches Omakub Tokyo Night aesthetic)
   - Cursor theme: Yaru
-  - Removed Tokyo Night GTK theme download (variant didn't exist in upstream repo)
-- **Documentation** - Updated CLAUDE.md to reflect new theming approach
+- **User Themes detection** - Now uses `--enabled` flag to correctly detect active extensions
+- **Installation flow** - Ulauncher no longer starts during install, only on next login
+- **Post-install messaging** - Clearer explanation of what activates after logout/login
 
 ### Fixed
+- **Ulauncher focus steal** - Removed daemon start during installation to prevent focus stealing from terminal
+- **Interactive sassc prompt** - Pre-installs sassc with `-y` flag before Orchis installer runs
 - **Extension installation failures** - All 7 extensions now install correctly (was 0/7, now 7/7)
+- **Shell theme not applying** - Fixed User Themes extension detection to check enabled status
 - **Tokyo Night theme not found** - Replaced with working Yaru-purple + Orchis combination
 
 ### Removed
 - `install/theming/download-theme.sh` - No longer needed with Yaru built-in themes
 - Flatpak/Extension Manager installation - Simplified to CLI-only approach
 - Papirus icon theme dependency - Using built-in Yaru-purple instead
+- Ulauncher daemon start during installation - Now only starts on login via autostart
 
 ## [0.2.0] - 2026-01-10
 
@@ -79,5 +93,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Backup system for dconf settings
 - Installation manifest generation
 
+[0.3.0]: https://github.com/reisset/myubuntu/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/reisset/myubuntu/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/reisset/myubuntu/releases/tag/v0.1.0

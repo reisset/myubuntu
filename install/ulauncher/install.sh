@@ -65,17 +65,6 @@ log_info "Setting up Ulauncher autostart..."
 mkdir -p "$HOME/.config/autostart"
 cp /usr/share/applications/ulauncher.desktop "$HOME/.config/autostart/"
 
-# Start Ulauncher daemon if not already running
-if ! pgrep -x ulauncher > /dev/null; then
-    log_info "Starting Ulauncher daemon..."
-    ulauncher --no-window &
-    disown
-    # Give it a moment to initialize
-    sleep 1
-else
-    log_info "Ulauncher is already running"
-fi
-
 log_info "Ulauncher installed successfully!"
 log_info ""
 log_info "Notes:"

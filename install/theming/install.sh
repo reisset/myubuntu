@@ -46,6 +46,12 @@ THEME_DIR="$HOME/.local/share/themes"
 ORCHIS_REPO="https://github.com/vinceliuice/Orchis-theme.git"
 TEMP_DIR="/tmp/orchis-theme-$$"
 
+# Pre-install sassc to avoid interactive prompts from Orchis installer
+if ! command -v sassc &>/dev/null; then
+    log_info "Installing sassc (required for Orchis theme)..."
+    sudo apt-get install -y sassc
+fi
+
 if [ ! -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
     log_info "Orchis shell theme not found, downloading..."
 
@@ -72,7 +78,7 @@ fi
 
 # Apply Orchis Shell theme (requires User Themes extension)
 if [ -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
-    if gnome-extensions list 2>/dev/null | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; then
+    if gnome-extensions list --enabled 2>/dev/null | grep -q "user-theme@gnome-shell-extensions.gcampax.github.com"; then
         log_info "Applying Orchis shell theme..."
         if safe_gsettings org.gnome.shell.extensions.user-theme name "$SHELL_THEME_NAME"; then
             log_info "Shell theme applied successfully"
@@ -80,8 +86,8 @@ if [ -d "$THEME_DIR/$SHELL_THEME_NAME" ]; then
             log_warn "Could not apply shell theme (User Themes extension may not be enabled)"
         fi
     else
-        log_warn "User Themes extension not installed - shell theme skipped"
-        log_info "Shell theme will be applied after installing extensions and logging out"
+        log_warn "User Themes extension installed but not yet active"
+        log_info "Shell theme ($SHELL_THEME_NAME) will apply automatically after logout/login"
     fi
 else
     log_warn "Orchis shell theme not found - skipping shell theme application"
