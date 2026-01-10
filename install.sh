@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.3.2"
+VERSION="0.3.3"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
@@ -44,7 +44,7 @@ for arg in "$@"; do
             shift
             ;;
         -h|--help)
-            echo "myubuntu v$VERSION - Ubuntu Desktop Bootstrap"
+            echo "myubuntu - Ubuntu Desktop Bootstrap"
             echo ""
             echo "Usage: ./install.sh [OPTIONS]"
             echo ""
@@ -82,7 +82,7 @@ done
 echo ""
 echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║                                                               ║${NC}"
-echo -e "${CYAN}║                      myubuntu v$VERSION                          ║${NC}"
+echo -e "${CYAN}║                           myubuntu                            ║${NC}"
 echo -e "${CYAN}║           Lightweight Ubuntu Desktop Bootstrap                ║${NC}"
 echo -e "${CYAN}║                                                               ║${NC}"
 echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"

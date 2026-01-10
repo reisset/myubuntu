@@ -14,6 +14,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
 
+## [0.3.3] - 2026-01-10
+
+### Changed
+- **Cleaner banners** - Removed version numbers from install.sh and uninstall.sh banners
+  - Banners now display just "myubuntu" and "myubuntu - Uninstaller" without version
+  - Fixed centering alignment in uninstall.sh banner
+  - Help text (`--help`) also updated to remove version numbers
+  - Provides cleaner, less cluttered terminal output
+- **Ulauncher prompt clarification** - Changed "Reinstall/reconfigure" to "Install/configure"
+  - More accurate wording when Ulauncher is already installed
+  - Avoids confusion about what the prompt does
+
 ## [0.3.2] - 2026-01-10
 
 ### Changed

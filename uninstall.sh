@@ -6,7 +6,7 @@
 
 set -e
 
-VERSION="0.3.2"
+VERSION="0.3.3"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.myubuntu-backup"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
@@ -50,7 +50,7 @@ for arg in "$@"; do
             shift
             ;;
         -h|--help)
-            echo "myubuntu v$VERSION - Uninstaller"
+            echo "myubuntu - Uninstaller"
             echo ""
             echo "Usage: ./uninstall.sh [OPTIONS]"
             echo ""
@@ -89,8 +89,8 @@ done
 echo ""
 echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║                                                               ║${NC}"
-echo -e "${CYAN}║                 myubuntu v$VERSION - Uninstaller                 ║${NC}"
-echo -e "${CYAN}║         Reverting Ubuntu Desktop Customizations              ║${NC}"
+echo -e "${CYAN}║                    myubuntu - Uninstaller                      ║${NC}"
+echo -e "${CYAN}║            Reverting Ubuntu Desktop Customizations            ║${NC}"
 echo -e "${CYAN}║                                                               ║${NC}"
 echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
