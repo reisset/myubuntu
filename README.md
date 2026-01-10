@@ -1,208 +1,105 @@
 # myubuntu
 
-> Lightweight, modular Ubuntu desktop bootstrap script
+> Lightweight, modular Ubuntu GNOME desktop bootstrap script
 
-A simple, transparent script to apply personal customizations to a fresh Ubuntu install. Part of my personal Linux toolkit alongside [mybash](https://github.com/reisset/mybash) (terminal environment) and myscreensavers (idle-time ASCII art).
+Transforms a fresh Ubuntu install into a personalized, Omakub-inspired desktop. Part of my Linux toolkit alongside [mybash](https://github.com/reisset/mybash) (terminal) and myscreensavers (idle art).
 
-## What It Does
+## Features
 
-**myubuntu** transforms a fresh Ubuntu GNOME installation into a personalized, productive desktop environment by applying:
-
-- **Keyboard Shortcuts** - Custom keybindings including Super+Space for Ulauncher
-- **GNOME Extensions** - Omakub-inspired setup with Just Perfection, Tactile tiling, Space Bar, and more
-- **Ulauncher** - Fast application launcher with Wayland support
-- **Theming** - Dark mode, Tokyo Night theme, Papirus icons, custom wallpaper
-- **Quality of Life** - Dock in overview only, pinned apps, night light, centered windows, Nautilus tweaks
+- **Omakub-style Desktop** - Dock only in overview (press Super), 7 GNOME extensions, UI refinements
+- **Tokyo Night Theme** - Dark mode, GTK + Shell theme, Papirus icons, custom wallpaper
+- **Ulauncher** - Fast launcher (Super+Space) with Wayland support
+- **Window Tiling** - Tactile grid-based tiling (Super+T)
+- **Quality of Life** - Centered windows, night light, pinned apps, Nautilus tweaks
 
 ## Quick Start
 
 ```bash
-# Clone the repository
 git clone https://github.com/reisset/myubuntu.git
 cd myubuntu
-
-# Run the installer
 ./install.sh
 ```
 
-That's it! Log out and back in to see all changes.
+Log out and back in to see all changes.
 
-## Requirements
-
-- Ubuntu 24.04 LTS or newer
-- GNOME desktop environment
-- Sudo privileges
+**Requirements:** Ubuntu 24.04+ with GNOME desktop and sudo privileges
 
 ## Components
 
-### Keyboard Shortcuts
-
-Applies custom GNOME keybindings from dconf config files. Includes Super+Space for Ulauncher (custom shortcut via media-keys).
-
-```bash
-# Install only shortcuts
-./install.sh --only=shortcuts
-
-# Export your current shortcuts
-./install/shortcuts/export.sh
-```
-
-### GNOME Extensions
-
-Installs and configures 7 GNOME Shell extensions with Omakub-inspired settings:
-
-- **User Themes** - Custom shell theme support
-- **Blur my Shell** - Blur effects on overview and dash
-- **AppIndicator** - System tray icon support
-- **Just Perfection** - UI refinements (2x animation speed, workspace indicators)
-- **Tactile** - Window tiling grid (Super+T to activate)
-- **Space Bar** - Workspace indicators in top bar
-- **Alphabetical App Grid** - Auto-sort applications A-Z
-
-**Omakub-style dock behavior:** Disables ubuntu-dock so the dock only appears in the Activities overview (press Super key).
-
-### Ulauncher
-
-Installs Ulauncher from official PPA with Wayland support (wmctrl) and file preview support (gnome-sushi).
-
-- Bound to Super+Space
-- Auto-starts on login
-- Dark theme by default
-
-### Theming
-
-- Enables system-wide dark mode
-- Tokyo Night GTK + Shell theme
-- Installs and sets Papirus-Dark icon theme
-- Sets custom wallpaper (bundled)
-- Blue accent color
-
-### Quality of Life
-
-- **Dock**: Only visible in overview (press Super), Omakub-style
-- **Pinned Apps**: Brave, VS Code, Spotify, Files, Obsidian
-- **Windows**: Center new windows on screen
-- **Battery**: Show percentage in top bar
-- **Night Light**: Enabled by default
-- **Nautilus**: List view, sensible defaults
+| Component | What it installs |
+|-----------|------------------|
+| **shortcuts** | Super+Space for Ulauncher, custom GNOME keybindings |
+| **extensions** | 7 GNOME Shell extensions (Just Perfection, Tactile, Blur my Shell, Space Bar, User Themes, AppIndicator, Alphabetical App Grid). Disables ubuntu-dock for Omakub-style behavior. |
+| **ulauncher** | Ulauncher from PPA with Wayland support, auto-start daemon |
+| **theming** | Tokyo Night GTK + Shell theme, Papirus-Dark icons, wallpaper, dark mode |
+| **qol** | Pinned apps (Brave, VS Code, Spotify, Files, Obsidian), center windows, night light, Nautilus list view |
 
 ## Usage
 
 ```bash
-# Install everything (default)
+# Install everything
 ./install.sh
 
 # Install specific components
-./install.sh --only=shortcuts,theming
+./install.sh --only=extensions,theming
 
 # Skip components
 ./install.sh --skip=ulauncher
 
-# Preview what would be installed
+# Preview changes
 ./install.sh --dry-run
 
-# Skip confirmation prompts
-./install.sh --no-confirm
-```
-
-## Uninstalling
-
-```bash
-# Uninstall everything (revert to Ubuntu defaults)
+# Uninstall (revert to defaults)
 ./uninstall.sh
 
-# Uninstall specific components
-./uninstall.sh --only=shortcuts,theming
-
-# Preview what would be uninstalled
-./uninstall.sh --dry-run
-
-# Uninstall and remove packages (Ulauncher, Papirus, etc.)
+# Uninstall and remove packages
 ./uninstall.sh --remove-packages
 ```
 
-The uninstall script:
-- Restores settings from `~/.myubuntu-backup/` when available
-- Resets other settings to Ubuntu defaults
-- Disables GNOME extensions (doesn't remove them)
-- Optionally removes installed packages with `--remove-packages`
-- Preserves config directories (`~/.config/ulauncher`, etc.) for manual cleanup
-
 ## Customization
 
-### Changing Pinned Apps
+**Pinned Apps:** Edit `install/qol/install.sh`, modify the `favorite-apps` line. Find desktop files in `/usr/share/applications/` or `~/.local/share/applications/`.
 
-Edit `install/qol/install.sh` and modify the `favorite-apps` line:
+**Shortcuts:** Configure in GNOME Settings, then export with `./install/shortcuts/export.sh` and commit.
 
-```bash
-safe_gsettings org.gnome.shell favorite-apps "['app1.desktop', 'app2.desktop']"
-```
-
-Desktop file names can be found in `/usr/share/applications/` or `~/.local/share/applications/`.
-
-### Changing Keyboard Shortcuts
-
-1. Configure shortcuts manually in GNOME Settings
-2. Export them: `./install/shortcuts/export.sh`
-3. Commit the updated config files to git
-
-### Changing Theme/Wallpaper
-
-Replace `install/theming/background.jpg` with your own image, or modify `install/theming/install.sh` to change theme preferences.
+**Wallpaper:** Replace `install/theming/background.jpg` with your own image.
 
 ## Project Structure
 
 ```
 myubuntu/
-├── install.sh              # Main entry point
-├── README.md
-├── MYUBUNTU_SPEC.md        # Detailed specification
-├── scripts/
-│   └── helpers.sh          # Shared functions
-├── install/
-│   ├── shortcuts/          # Keyboard shortcuts
-│   ├── ulauncher/          # Ulauncher setup
-│   ├── theming/            # Dark mode, icons, wallpaper
-│   └── qol/                # Dock and misc tweaks
-└── configs/                # Exportable dconf backups
+├── install.sh                  # Main installer
+├── uninstall.sh                # Revert to defaults
+├── scripts/helpers.sh          # Shared utilities
+└── install/
+    ├── shortcuts/              # Keyboard shortcuts (dconf)
+    ├── extensions/             # GNOME extensions + config
+    ├── ulauncher/              # Ulauncher setup
+    ├── theming/                # Tokyo Night theme
+    └── qol/                    # Quality of life tweaks
 ```
-
-## Safety & Idempotency
-
-- **Backups**: Current settings are backed up to `~/.myubuntu-backup/` before applying changes
-- **Idempotent**: Safe to run multiple times - checks if already installed
-- **Transparent**: Simple bash scripts, no magic
-- **Manifest**: Installation manifest saved to `~/.myubuntu-manifest.txt`
 
 ## Philosophy
 
-This project emulates [Omakub](https://omakub.org/)'s GNOME desktop setup, but without the pre-configured applications. We adopt Omakub's extension selections, dock behavior (hidden on desktop, visible in overview), and UI refinements, while customizing pinned apps, theming, and shortcuts to personal preferences.
+Emulates [Omakub](https://omakub.org/)'s GNOME setup without pre-configured apps. Adopts Omakub's extensions, dock behavior (hidden on desktop, visible in overview), and UI refinements, while customizing apps, theme, and shortcuts.
 
-- **Modular**: Each component is independent and optional
-- **Learnable**: Simple shell scripts, easy to understand and modify
-- **Portable**: Config files can be synced across machines via git
-- **Focused**: Does one thing well - desktop environment setup
-- **Non-invasive**: Doesn't touch terminal configs (mybash handles that)
+**Design principles:** Modular · Transparent · Idempotent · Learnable · Non-invasive
 
-## Future Plans
+## Safety
 
-- Webapp pinning to dock
-- Ulauncher extensions bundling
-- Cross-machine config sync workflow
-- Additional GNOME extensions (optional)
+- **Backups:** Settings saved to `~/.myubuntu-backup/` before changes
+- **Idempotent:** Safe to run multiple times
+- **Reversible:** Uninstaller restores Ubuntu defaults
+- **Manifest:** Installation log at `~/.myubuntu-manifest.txt`
 
-## Related Projects
+## Related
 
 - [mybash](https://github.com/reisset/mybash) - Terminal environment (Starship, modern CLI tools, Kitty)
-- myscreensavers - Idle-time ASCII art screensavers
+- myscreensavers - ASCII art screensavers
 
 ## License
 
-MIT License - See LICENSE file for details
-
-## Contributing
-
-This is a personal configuration project, but feel free to fork and adapt it to your needs!
+MIT License - See LICENSE file
 
 ---
 
