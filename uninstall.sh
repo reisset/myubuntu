@@ -6,84 +6,32 @@
 
 set -e
 
-VERSION="0.3.3"
+VERSION="0.4.0"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.myubuntu-backup"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
 source "$REPO_DIR/scripts/helpers.sh"
 
-# Parse arguments
-UNINSTALL_ALL=true
-SKIP_COMPONENTS=()
-ONLY_COMPONENTS=()
-DRY_RUN=false
-NO_CONFIRM=false
-REMOVE_PACKAGES=false
-
-for arg in "$@"; do
-    case $arg in
-        --all)
-            UNINSTALL_ALL=true
-            shift
-            ;;
-        --skip=*)
-            IFS=',' read -ra SKIP_COMPONENTS <<< "${arg#*=}"
-            UNINSTALL_ALL=false
-            shift
-            ;;
-        --only=*)
-            IFS=',' read -ra ONLY_COMPONENTS <<< "${arg#*=}"
-            UNINSTALL_ALL=false
-            shift
-            ;;
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        --no-confirm)
-            NO_CONFIRM=true
-            shift
-            ;;
-        --remove-packages)
-            REMOVE_PACKAGES=true
-            shift
-            ;;
-        -h|--help)
-            echo "myubuntu - Uninstaller"
-            echo ""
-            echo "Usage: ./uninstall.sh [OPTIONS]"
-            echo ""
-            echo "Options:"
-            echo "  --all              Uninstall all components (default)"
-            echo "  --only=X,Y         Uninstall only specified components"
-            echo "  --skip=X,Y         Uninstall all except specified components"
-            echo "  --dry-run          Show what would be uninstalled without making changes"
-            echo "  --no-confirm       Skip confirmation prompts"
-            echo "  --remove-packages  Also remove installed packages (Ulauncher, Papirus, etc.)"
-            echo "  -h, --help         Show this help message"
-            echo ""
-            echo "Components:"
-            echo "  shortcuts   - Keyboard shortcuts and keybindings"
-            echo "  extensions  - GNOME extensions (disables, doesn't remove)"
-            echo "  ulauncher   - Ulauncher application launcher"
-            echo "  theming     - Orchis shell theme, dark mode, icons, wallpaper"
-            echo "  qol         - Quality of life tweaks (dock, Nautilus, etc.)"
-            echo ""
-            echo "Examples:"
-            echo "  ./uninstall.sh                       # Uninstall everything (keep packages)"
-            echo "  ./uninstall.sh --only=shortcuts      # Only remove shortcuts"
-            echo "  ./uninstall.sh --remove-packages     # Uninstall and remove packages"
-            echo "  ./uninstall.sh --dry-run             # Preview what would be removed"
-            exit 0
-            ;;
-        *)
-            log_error "Unknown option: $arg"
-            echo "Run './uninstall.sh --help' for usage"
-            exit 1
-            ;;
-    esac
-done
+# Show help if requested
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    echo "myubuntu - Uninstaller"
+    echo ""
+    echo "Usage: ./uninstall.sh"
+    echo ""
+    echo "Reverts all myubuntu customizations and removes packages:"
+    echo "  • shortcuts   - Keyboard shortcuts and keybindings"
+    echo "  • extensions  - GNOME extensions (disables them)"
+    echo "  • ulauncher   - Ulauncher application launcher (removes package)"
+    echo "  • theming     - Orchis theme, dark mode, icons (removes packages)"
+    echo "  • qol         - Quality of life tweaks"
+    echo "  • fonts       - JetBrains Mono Nerd Font"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo ""
+    exit 0
+fi
 
 # Show banner
 echo ""
@@ -115,51 +63,31 @@ if ! check_gnome; then
     exit 1
 fi
 
-# Determine which components to uninstall
-COMPONENTS=(shortcuts extensions ulauncher theming qol)
-
-if [ ${#ONLY_COMPONENTS[@]} -gt 0 ]; then
-    COMPONENTS=("${ONLY_COMPONENTS[@]}")
-elif [ ${#SKIP_COMPONENTS[@]} -gt 0 ]; then
-    for skip in "${SKIP_COMPONENTS[@]}"; do
-        COMPONENTS=("${COMPONENTS[@]/$skip}")
-    done
-fi
+# Components to uninstall
+COMPONENTS=(shortcuts extensions ulauncher theming qol fonts)
 
 # Show uninstall plan
 echo ""
 log_info "Uninstall plan:"
 for component in "${COMPONENTS[@]}"; do
-    if [ -n "$component" ]; then
-        echo "  ✓ $component"
-    fi
+    echo "  ✓ $component"
 done
 echo ""
-
-if $REMOVE_PACKAGES; then
-    log_warn "Will also attempt to remove packages (Ulauncher, Papirus, etc.)"
-    echo ""
-fi
-
-if $DRY_RUN; then
-    log_info "Dry run complete. No changes made."
-    exit 0
-fi
+log_warn "Will also remove packages (Ulauncher, Orchis theme, fonts, etc.)"
+echo ""
 
 # Confirm uninstall
-if [ "$NO_CONFIRM" = false ]; then
-    echo ""
-    log_warn "This will revert myubuntu customizations to Ubuntu defaults."
-    if [ -d "$BACKUP_DIR" ]; then
-        log_info "Backups will be restored from: $BACKUP_DIR"
-    else
-        log_warn "No backup directory found - will use Ubuntu defaults"
-    fi
-    echo ""
-    if ! confirm "Proceed with uninstall?"; then
-        log_info "Uninstall cancelled"
-        exit 0
-    fi
+echo ""
+log_warn "This will revert myubuntu customizations to Ubuntu defaults."
+if [ -d "$BACKUP_DIR" ]; then
+    log_info "Backups will be restored from: $BACKUP_DIR"
+else
+    log_warn "No backup directory found - will use Ubuntu defaults"
+fi
+echo ""
+if ! confirm "Proceed with uninstall?"; then
+    log_info "Uninstall cancelled"
+    exit 0
 fi
 
 echo ""
@@ -239,15 +167,11 @@ uninstall_ulauncher() {
         rm -f "$HOME/.config/autostart/ulauncher.desktop"
     fi
 
-    # Optionally remove package
-    if $REMOVE_PACKAGES; then
-        if command -v ulauncher &> /dev/null; then
-            log_info "Removing Ulauncher package..."
-            sudo apt remove -y ulauncher
-            sudo apt autoremove -y
-        fi
-    else
-        log_info "Ulauncher package kept (use --remove-packages to uninstall)"
+    # Remove package
+    if command -v ulauncher &> /dev/null; then
+        log_info "Removing Ulauncher package..."
+        sudo apt remove -y ulauncher
+        sudo apt autoremove -y
     fi
 
     log_info "Ulauncher config preserved at ~/.config/ulauncher (delete manually if needed)"
@@ -277,20 +201,16 @@ uninstall_theming() {
         safe_gsettings org.gnome.shell.extensions.user-theme name ''
     fi
 
-    # Optionally remove packages and theme files
-    if $REMOVE_PACKAGES; then
-        if dpkg -l | grep -q papirus-icon-theme; then
-            log_info "Removing Papirus icon theme..."
-            sudo apt remove -y papirus-icon-theme
-        fi
+    # Remove packages and theme files
+    if dpkg -l | grep -q papirus-icon-theme; then
+        log_info "Removing Papirus icon theme..."
+        sudo apt remove -y papirus-icon-theme
+    fi
 
-        local theme_dir="$HOME/.local/share/themes/Orchis-Purple-Dark"
-        if [ -d "$theme_dir" ]; then
-            log_info "Removing Orchis theme..."
-            rm -rf "$theme_dir"
-        fi
-    else
-        log_info "Theme packages kept (use --remove-packages to uninstall)"
+    local theme_dir="$HOME/.local/share/themes/Orchis-Purple-Dark"
+    if [ -d "$theme_dir" ]; then
+        log_info "Removing Orchis theme..."
+        rm -rf "$theme_dir"
     fi
 
     log_info "Theme reset to Ubuntu defaults"
@@ -320,6 +240,21 @@ uninstall_qol() {
     log_info "Quality of life tweaks reverted"
 }
 
+# Uninstall function: fonts
+uninstall_fonts() {
+    log_info "=== Uninstalling fonts ==="
+
+    local font_dir="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+    if [ -d "$font_dir" ]; then
+        log_info "Removing JetBrains Mono Nerd Font..."
+        rm -rf "$font_dir"
+        fc-cache -fv > /dev/null 2>&1
+        log_info "Font removed and cache refreshed"
+    else
+        log_info "Font directory not found, skipping"
+    fi
+}
+
 # Run uninstall for each component
 for component in "${COMPONENTS[@]}"; do
     if [ -n "$component" ]; then
@@ -331,6 +266,16 @@ for component in "${COMPONENTS[@]}"; do
         fi
     fi
 done
+
+# Remove CLI symlink
+echo ""
+log_info "Removing myubuntu CLI symlink..."
+if [ -L "$HOME/.local/bin/myubuntu" ]; then
+    rm -f "$HOME/.local/bin/myubuntu"
+    log_info "CLI symlink removed"
+else
+    log_info "CLI symlink not found, skipping"
+fi
 
 # Done!
 echo ""

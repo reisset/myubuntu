@@ -9,8 +9,10 @@ Transforms a fresh Ubuntu install into a personalized, Omakub-inspired desktop. 
 - **Omakub-style Desktop** - Dock only in overview (press Super), 7 GNOME extensions, UI refinements
 - **Orchis Purple Theme** - Dark mode, Yaru-purple GTK + Orchis shell theme, custom wallpaper
 - **Ulauncher** - Fast launcher (Super+Space) with Wayland support
-- **Window Tiling** - Tactile grid-based tiling (Super+T)
+- **Window Tiling** - Tactile grid-based tiling (Super+T), close with Super+Q
+- **Nerd Fonts** - JetBrains Mono Nerd Font installed globally (VS Code, terminal, all apps)
 - **Quality of Life** - Centered windows, night light, pinned apps, Nautilus tweaks
+- **myubuntu CLI** - Health check (`myubuntu doctor`) and shortcuts reference (`myubuntu keys`)
 
 ## Quick Start
 
@@ -28,11 +30,12 @@ Log out and back in to see all changes.
 
 | Component | What it installs |
 |-----------|------------------|
-| **shortcuts** | Super+Space for Ulauncher, custom GNOME keybindings |
+| **shortcuts** | Super+Space for Ulauncher, Super+Q to close windows, workspace switching |
 | **extensions** | 7 GNOME Shell extensions (Just Perfection, Tactile, Blur my Shell, Space Bar, User Themes, AppIndicator, Alphabetical App Grid). Disables ubuntu-dock for Omakub-style behavior. |
 | **ulauncher** | Ulauncher from PPA with Wayland support, auto-start daemon |
 | **theming** | Yaru-purple GTK theme (built-in), Orchis-Purple-Dark shell theme, wallpaper, dark mode, purple accent |
 | **qol** | Pinned apps (Brave, VS Code, Spotify, Files, Obsidian), center windows, night light, Nautilus list view |
+| **fonts** | JetBrains Mono Nerd Font installed globally (available system-wide in VS Code, terminal, all apps) |
 
 ## Usage
 
@@ -40,21 +43,17 @@ Log out and back in to see all changes.
 # Install everything
 ./install.sh
 
-# Install specific components
-./install.sh --only=extensions,theming
-
-# Skip components
-./install.sh --skip=ulauncher
-
-# Preview changes
-./install.sh --dry-run
-
-# Uninstall (revert to defaults)
+# Uninstall (revert to defaults and remove packages)
 ./uninstall.sh
 
-# Uninstall and remove packages
-./uninstall.sh --remove-packages
+# Check system health
+myubuntu doctor
+
+# View keyboard shortcuts
+myubuntu keys
 ```
+
+**Note:** To customize which components to install, simply comment out lines in `install.sh`. The installer is transparent and easy to read.
 
 ## Customization
 
@@ -70,13 +69,15 @@ Log out and back in to see all changes.
 myubuntu/
 ├── install.sh                  # Main installer
 ├── uninstall.sh                # Revert to defaults
+├── bin/myubuntu                # CLI tool (doctor, keys)
 ├── scripts/helpers.sh          # Shared utilities
 └── install/
     ├── shortcuts/              # Keyboard shortcuts (dconf)
     ├── extensions/             # GNOME extensions + config
     ├── ulauncher/              # Ulauncher setup
     ├── theming/                # Yaru + Orchis theming
-    └── qol/                    # Quality of life tweaks
+    ├── qol/                    # Quality of life tweaks
+    └── fonts/                  # JetBrains Mono Nerd Font
 ```
 
 ## Philosophy

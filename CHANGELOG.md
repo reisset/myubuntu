@@ -8,11 +8,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### 🔮 Future Plans
 - **Theme switcher** - Omakub-style theme switching between Orchis, Graphite, Marble shell themes
-- **Ctrl+Q to close window** - Add keyboard shortcut for closing current window
 - Webapp pinning to dock
 - Ulauncher extensions bundling
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
+
+## [0.4.0] - 2026-01-11
+
+### Added
+- **myubuntu CLI tool** - New command-line interface with health check and shortcuts reference
+  - `myubuntu doctor` - Comprehensive system health check (extensions, themes, shortcuts, fonts)
+  - `myubuntu keys` - Keyboard shortcuts cheatsheet
+  - Symlinked to `~/.local/bin/myubuntu` for easy access
+- **Fonts component** - JetBrains Mono Nerd Font global installation
+  - Installs font system-wide (available in VS Code, terminal, all apps)
+  - Complements mybash's Kitty-specific font installation
+- **Super+Q shortcut** - Close windows with Super+Q (macOS Cmd+Q muscle memory)
+
+### Changed
+- **Simplified installers** - Removed all CLI flags for cleaner, straightforward usage
+  - `./install.sh` now just installs everything (no --only, --skip, --dry-run, --no-confirm)
+  - `./uninstall.sh` now fully uninstalls including packages (no --remove-packages flag)
+  - Reduced install.sh by ~100 lines of argument parsing code
+  - Philosophy: "Either you're installing or you're not" - keep it simple
+
+### Removed
+- **CLI flags** - Removed --only=, --skip=, --dry-run, --no-confirm from install.sh
+- **--remove-packages flag** - Uninstaller now always removes packages (Ulauncher, themes, fonts)
 
 ## [0.3.3] - 2026-01-10
 

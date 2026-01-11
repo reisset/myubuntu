@@ -1,0 +1,323 @@
+#!/bin/bash
+
+# myubuntu CLI tool
+# Commands: doctor, keys
+
+set -e
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$REPO_DIR/scripts/helpers.sh"
+
+VERSION="0.4.0"
+
+# Health check output functions
+check_pass() { echo -e "${GREEN}✅${NC} $1"; }
+check_warn() { echo -e "${YELLOW}⚠️ ${NC} $1"; }
+check_fail() { echo -e "${RED}❌${NC} $1"; }
+check_info() { echo -e "${BLUE}ℹ️ ${NC} $1"; }
+
+# --------------------------------------------------------------------------
+# Doctor Command - Health Check
+# --------------------------------------------------------------------------
+
+run_doctor() {
+    echo ""
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║                                                               ║${NC}"
+    echo -e "${CYAN}║                    myubuntu doctor v$VERSION                      ║${NC}"
+    echo -e "${CYAN}║                  System Health Check                          ║${NC}"
+    echo -e "${CYAN}║                                                               ║${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    ISSUES_FOUND=0
+
+    # Check 1: GNOME Shell version
+    echo "1. Checking GNOME Shell version..."
+    if command -v gnome-shell &> /dev/null; then
+        GNOME_VERSION=$(gnome-shell --version | grep -oP '\d+\.\d+' || echo "unknown")
+        if [[ "$GNOME_VERSION" != "unknown" ]]; then
+            MAJOR_VERSION=$(echo "$GNOME_VERSION" | cut -d. -f1)
+            if [[ "$MAJOR_VERSION" -ge 45 ]]; then
+                check_pass "GNOME Shell $GNOME_VERSION detected"
+            else
+                check_warn "GNOME Shell $GNOME_VERSION (recommended: 45+)"
+                ((ISSUES_FOUND++))
+            fi
+        else
+            check_warn "Could not detect GNOME Shell version"
+            ((ISSUES_FOUND++))
+        fi
+    else
+        check_fail "GNOME Shell not found"
+        ((ISSUES_FOUND++))
+    fi
+
+    # Check 2: Extensions installed and enabled
+    echo ""
+    echo "2. Checking GNOME extensions..."
+    EXPECTED_EXTENSIONS=(
+        "user-theme@gnome-shell-extensions.gcampax.github.com"
+        "blur-my-shell@aunetx"
+        "appindicatorsupport@rgcjonas.gmail.com"
+        "just-perfection-desktop@just-perfection"
+        "tactile@lundal.io"
+        "space-bar@luchrioh"
+        "AlphabeticalAppGrid@stuarthayhurst"
+    )
+
+    EXT_ISSUES=0
+    for ext in "${EXPECTED_EXTENSIONS[@]}"; do
+        if gnome-extensions list 2>/dev/null | grep -q "^$ext$"; then
+            if gnome-extensions info "$ext" 2>/dev/null | grep -q "State: ENABLED"; then
+                check_pass "$ext (enabled)"
+            else
+                check_warn "$ext (installed but disabled)"
+                ((EXT_ISSUES++))
+            fi
+        else
+            check_fail "$ext (not installed)"
+            ((EXT_ISSUES++))
+        fi
+    done
+
+    if [[ $EXT_ISSUES -gt 0 ]]; then
+        ((ISSUES_FOUND++))
+        check_info "Run './install.sh' to install missing extensions"
+    fi
+
+    # Check 3: Ulauncher
+    echo ""
+    echo "3. Checking Ulauncher..."
+    if command -v ulauncher &> /dev/null; then
+        check_pass "Ulauncher is installed"
+
+        # Check autostart
+        if [ -f "$HOME/.config/autostart/ulauncher.desktop" ]; then
+            check_pass "Autostart configured"
+        else
+            check_warn "Autostart not configured"
+            ((ISSUES_FOUND++))
+        fi
+    else
+        check_fail "Ulauncher not installed"
+        ((ISSUES_FOUND++))
+        check_info "Run './install.sh' to install Ulauncher"
+    fi
+
+    # Check 4: Shell theme
+    echo ""
+    echo "4. Checking shell theme..."
+    if gsettings list-schemas | grep -q "org.gnome.shell.extensions.user-theme"; then
+        SHELL_THEME=$(gsettings get org.gnome.shell.extensions.user-theme name 2>/dev/null | tr -d "'")
+        if [[ "$SHELL_THEME" == "Orchis-Purple-Dark" ]]; then
+            check_pass "Shell theme: $SHELL_THEME"
+        else
+            check_warn "Shell theme: $SHELL_THEME (expected: Orchis-Purple-Dark)"
+            ((ISSUES_FOUND++))
+        fi
+    else
+        check_warn "User Themes extension not available"
+        ((ISSUES_FOUND++))
+    fi
+
+    # Check 5: GTK theme
+    echo ""
+    echo "5. Checking GTK theme..."
+    GTK_THEME=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null | tr -d "'" || echo "unknown")
+    if [[ "$GTK_THEME" =~ "Yaru-purple" ]]; then
+        check_pass "GTK theme: $GTK_THEME"
+    else
+        check_warn "GTK theme: $GTK_THEME (expected: Yaru-purple-dark)"
+        ((ISSUES_FOUND++))
+    fi
+
+    # Check 6: Keyboard shortcuts
+    echo ""
+    echo "6. Checking keyboard shortcuts..."
+    CUSTOM_KEYS=$(gsettings get org.gnome.settings-daemon.plugins.media-keys custom-keybindings 2>/dev/null || echo "[]")
+    if [[ "$CUSTOM_KEYS" == "[]" ]]; then
+        check_fail "No custom keybindings configured"
+        ((ISSUES_FOUND++))
+    else
+        # Check for Ulauncher (Super+Space)
+        ULAUNCHER_KEY_FOUND=false
+        for key_path in $(echo "$CUSTOM_KEYS" | grep -oP "'/[^']+'" | tr -d "'"); do
+            BINDING=$(gsettings get org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:"$key_path" binding 2>/dev/null | tr -d "'")
+            COMMAND=$(gsettings get org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:"$key_path" command 2>/dev/null | tr -d "'")
+            if [[ "$BINDING" == "<Super>space" && "$COMMAND" == "ulauncher-toggle" ]]; then
+                ULAUNCHER_KEY_FOUND=true
+                break
+            fi
+        done
+
+        if $ULAUNCHER_KEY_FOUND; then
+            check_pass "Super+Space configured for Ulauncher"
+        else
+            check_warn "Super+Space not configured for Ulauncher"
+            ((ISSUES_FOUND++))
+        fi
+
+        # Check for close window (Super+Q)
+        CLOSE_KEY=$(gsettings get org.gnome.desktop.wm.keybindings close 2>/dev/null || echo "[]")
+        if echo "$CLOSE_KEY" | grep -q "<Super>q"; then
+            check_pass "Super+Q configured for close window"
+        else
+            check_warn "Super+Q not configured for close window"
+            ((ISSUES_FOUND++))
+        fi
+    fi
+
+    # Check 7: Pinned apps
+    echo ""
+    echo "7. Checking pinned applications..."
+    FAVORITES=$(gsettings get org.gnome.shell favorite-apps 2>/dev/null || echo "[]")
+    EXPECTED_APPS=("brave-browser" "code" "spotify" "Nautilus" "obsidian")
+    PINNED_COUNT=0
+
+    for app in "${EXPECTED_APPS[@]}"; do
+        if echo "$FAVORITES" | grep -q "$app"; then
+            ((PINNED_COUNT++))
+        fi
+    done
+
+    if [[ $PINNED_COUNT -ge 4 ]]; then
+        check_pass "$PINNED_COUNT/${#EXPECTED_APPS[@]} expected apps pinned"
+    elif [[ $PINNED_COUNT -gt 0 ]]; then
+        check_warn "$PINNED_COUNT/${#EXPECTED_APPS[@]} expected apps pinned"
+        ((ISSUES_FOUND++))
+    else
+        check_fail "No expected apps pinned"
+        ((ISSUES_FOUND++))
+    fi
+
+    # Check 8: Fonts
+    echo ""
+    echo "8. Checking fonts..."
+    if fc-list : family | grep -qi "JetBrainsMono Nerd Font"; then
+        check_pass "JetBrainsMono Nerd Font installed"
+    else
+        check_warn "JetBrainsMono Nerd Font not installed"
+        ((ISSUES_FOUND++))
+        check_info "Run './install.sh' to install fonts"
+    fi
+
+    # Check 9: Backup directory
+    echo ""
+    echo "9. Checking backup directory..."
+    if [ -d "$HOME/.myubuntu-backup" ]; then
+        check_pass "Backup directory exists"
+    else
+        check_warn "Backup directory not found"
+        ((ISSUES_FOUND++))
+    fi
+
+    # Summary
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    if [[ $ISSUES_FOUND -eq 0 ]]; then
+        check_pass "All checks passed! myubuntu is healthy."
+    else
+        check_warn "Found $ISSUES_FOUND issue(s) that may need attention"
+        echo ""
+        check_info "Run './install.sh' to fix configuration issues"
+    fi
+    echo ""
+}
+
+# --------------------------------------------------------------------------
+# Keys Command - Keyboard Shortcuts Cheatsheet
+# --------------------------------------------------------------------------
+
+run_keys() {
+    echo ""
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║                                                               ║${NC}"
+    echo -e "${CYAN}║                myubuntu Keyboard Shortcuts                    ║${NC}"
+    echo -e "${CYAN}║                                                               ║${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    echo -e "${GREEN}App Launcher & System${NC}"
+    echo "  Super+Space       Ulauncher (app launcher)"
+    echo "  Super             Show dock and Activities overview"
+    echo "  Super+N           Show all applications"
+    echo "  Super+L           Lock screen"
+    echo ""
+
+    echo -e "${GREEN}Window Management${NC}"
+    echo "  Super+Q           Close window"
+    echo "  Super+H           Minimize window"
+    echo "  Super+Up          Maximize window"
+    echo "  Super+Down        Restore/unmaximize window"
+    echo "  Alt+Tab           Switch between windows"
+    echo "  Alt+\`            Switch between windows of same app"
+    echo ""
+
+    echo -e "${GREEN}Tactile Tiling (Super+T)${NC}"
+    echo "  Super+T           Show tiling grid (hold and click to tile)"
+    echo "  Super+T,T         Toggle maximize current window"
+    echo ""
+
+    echo -e "${GREEN}Workspaces${NC}"
+    echo "  Ctrl+Alt+1-4      Switch to workspace 1-4"
+    echo "  Ctrl+Alt+Up       Move to workspace above"
+    echo "  Ctrl+Alt+Down     Move to workspace below"
+    echo "  Super+Shift+PgUp  Move window to workspace above"
+    echo "  Super+Shift+PgDn  Move window to workspace below"
+    echo ""
+
+    echo -e "${GREEN}Screenshots${NC}"
+    echo "  Print             Take screenshot (interactive)"
+    echo "  Shift+Print       Take screenshot of window"
+    echo "  Alt+Print         Take screenshot of area"
+    echo ""
+
+    echo -e "${BLUE}Tip:${NC} Workspace labels are visible in the Space Bar extension"
+    echo ""
+}
+
+# --------------------------------------------------------------------------
+# Help Command
+# --------------------------------------------------------------------------
+
+show_help() {
+    echo ""
+    echo "myubuntu CLI - Ubuntu Desktop Management Tool"
+    echo ""
+    echo "Usage: myubuntu [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  doctor    Run health check on myubuntu installation"
+    echo "  keys      Show keyboard shortcuts cheatsheet"
+    echo "  help      Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  myubuntu doctor    # Check system configuration"
+    echo "  myubuntu keys      # View all shortcuts"
+    echo ""
+}
+
+# --------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------
+
+case "${1:-}" in
+    doctor)
+        run_doctor
+        ;;
+    keys)
+        run_keys
+        ;;
+    help|-h|--help)
+        show_help
+        ;;
+    "")
+        show_help
+        ;;
+    *)
+        echo "Unknown command: $1"
+        echo "Run 'myubuntu help' for usage"
+        exit 1
+        ;;
+esac

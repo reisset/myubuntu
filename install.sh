@@ -6,77 +6,31 @@
 
 set -e
 
-VERSION="0.3.3"
+VERSION="0.4.0"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MANIFEST_FILE="$HOME/.myubuntu-manifest.txt"
 
 source "$REPO_DIR/scripts/helpers.sh"
 
-# Parse arguments
-INSTALL_ALL=true
-SKIP_COMPONENTS=()
-ONLY_COMPONENTS=()
-DRY_RUN=false
-NO_CONFIRM=false
-
-for arg in "$@"; do
-    case $arg in
-        --all)
-            INSTALL_ALL=true
-            shift
-            ;;
-        --skip=*)
-            IFS=',' read -ra SKIP_COMPONENTS <<< "${arg#*=}"
-            INSTALL_ALL=false
-            shift
-            ;;
-        --only=*)
-            IFS=',' read -ra ONLY_COMPONENTS <<< "${arg#*=}"
-            INSTALL_ALL=false
-            shift
-            ;;
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        --no-confirm)
-            NO_CONFIRM=true
-            shift
-            ;;
-        -h|--help)
-            echo "myubuntu - Ubuntu Desktop Bootstrap"
-            echo ""
-            echo "Usage: ./install.sh [OPTIONS]"
-            echo ""
-            echo "Options:"
-            echo "  --all           Install all components (default)"
-            echo "  --only=X,Y      Install only specified components"
-            echo "  --skip=X,Y      Install all except specified components"
-            echo "  --dry-run       Show what would be installed without making changes"
-            echo "  --no-confirm    Skip confirmation prompts"
-            echo "  -h, --help      Show this help message"
-            echo ""
-            echo "Components:"
-            echo "  shortcuts   - Keyboard shortcuts and keybindings"
-            echo "  extensions  - GNOME extensions (User Themes, Blur, AppIndicator)"
-            echo "  ulauncher   - Ulauncher application launcher"
-            echo "  theming     - Tokyo Night theme, dark mode, icons, wallpaper"
-            echo "  qol         - Quality of life tweaks (dock, Nautilus, etc.)"
-            echo ""
-            echo "Examples:"
-            echo "  ./install.sh                    # Install everything"
-            echo "  ./install.sh --only=shortcuts   # Only install shortcuts"
-            echo "  ./install.sh --skip=ulauncher   # Install all except Ulauncher"
-            echo "  ./install.sh --dry-run          # Preview what would be installed"
-            exit 0
-            ;;
-        *)
-            log_error "Unknown option: $arg"
-            echo "Run './install.sh --help' for usage"
-            exit 1
-            ;;
-    esac
-done
+# Show help if requested
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    echo "myubuntu - Ubuntu Desktop Bootstrap"
+    echo ""
+    echo "Usage: ./install.sh"
+    echo ""
+    echo "Installs all components:"
+    echo "  • shortcuts   - Keyboard shortcuts and keybindings"
+    echo "  • extensions  - GNOME extensions (User Themes, Blur, AppIndicator)"
+    echo "  • ulauncher   - Ulauncher application launcher"
+    echo "  • theming     - Orchis shell theme, Yaru-purple GTK, wallpaper"
+    echo "  • qol         - Quality of life tweaks (dock, Nautilus, etc.)"
+    echo "  • fonts       - JetBrains Mono Nerd Font (global install)"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo ""
+    exit 0
+fi
 
 # Show banner
 echo ""
@@ -103,38 +57,21 @@ if ! check_gnome; then
     exit 1
 fi
 
-# Determine which components to install
-COMPONENTS=(shortcuts extensions ulauncher theming qol)
-
-if [ ${#ONLY_COMPONENTS[@]} -gt 0 ]; then
-    COMPONENTS=("${ONLY_COMPONENTS[@]}")
-elif [ ${#SKIP_COMPONENTS[@]} -gt 0 ]; then
-    for skip in "${SKIP_COMPONENTS[@]}"; do
-        COMPONENTS=("${COMPONENTS[@]/$skip}")
-    done
-fi
+# Components to install
+COMPONENTS=(shortcuts extensions ulauncher theming qol fonts)
 
 # Show installation plan
 echo ""
 log_info "Installation plan:"
 for component in "${COMPONENTS[@]}"; do
-    if [ -n "$component" ]; then
-        echo "  ✓ $component"
-    fi
+    echo "  ✓ $component"
 done
 echo ""
 
-if $DRY_RUN; then
-    log_info "Dry run complete. No changes made."
-    exit 0
-fi
-
 # Confirm installation
-if [ "$NO_CONFIRM" = false ]; then
-    if ! confirm "Proceed with installation?"; then
-        log_info "Installation cancelled"
-        exit 0
-    fi
+if ! confirm "Proceed with installation?"; then
+    log_info "Installation cancelled"
+    exit 0
 fi
 
 echo ""
@@ -153,6 +90,13 @@ for component in "${COMPONENTS[@]}"; do
         bash "$REPO_DIR/install/$component/install.sh"
     fi
 done
+
+# Create CLI symlink
+echo ""
+log_info "Setting up myubuntu CLI..."
+mkdir -p "$HOME/.local/bin"
+ln -sf "$REPO_DIR/bin/myubuntu" "$HOME/.local/bin/myubuntu"
+log_info "CLI symlink created at ~/.local/bin/myubuntu"
 
 # Generate manifest
 log_info "Generating installation manifest..."
@@ -195,7 +139,10 @@ log_info "  2. After login, the following will be active:"
 log_info "     - GNOME extensions (Space Bar workspaces, Just Perfection, etc.)"
 log_info "     - Shell theme (Orchis-Purple-Dark)"
 log_info "     - Ulauncher launcher (Super+Space)"
+log_info "     - Close windows with Super+Q"
 log_info "  3. Press Super to see dock and Activities"
+log_info "  4. Run 'myubuntu doctor' to check system health"
+log_info "  5. Run 'myubuntu keys' to see all keyboard shortcuts"
 echo ""
 log_info "Enjoy your customized Ubuntu desktop!"
 echo ""
