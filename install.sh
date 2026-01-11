@@ -22,6 +22,7 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
     echo "  • shortcuts   - Keyboard shortcuts and keybindings"
     echo "  • extensions  - GNOME extensions (User Themes, Blur, AppIndicator)"
     echo "  • ulauncher   - Ulauncher application launcher"
+    echo "  • webapps     - Brave browser + PWA webapps (YouTube, Claude, X, Grok)"
     echo "  • theming     - Orchis shell theme, Yaru-purple GTK, wallpaper"
     echo "  • qol         - Quality of life tweaks (dock, Nautilus, etc.)"
     echo "  • fonts       - JetBrains Mono Nerd Font (global install)"
@@ -58,7 +59,7 @@ if ! check_gnome; then
 fi
 
 # Components to install
-COMPONENTS=(shortcuts extensions ulauncher theming qol fonts)
+COMPONENTS=(shortcuts extensions ulauncher webapps theming qol fonts)
 
 # Show installation plan
 echo ""
@@ -139,6 +140,7 @@ log_info "  2. After login, the following will be active:"
 log_info "     - GNOME extensions (Space Bar workspaces, Just Perfection, etc.)"
 log_info "     - Shell theme (Orchis-Purple-Dark)"
 log_info "     - Ulauncher launcher (Super+Space)"
+log_info "     - Webapps (YouTube, Claude, X, Grok)"
 log_info "     - Close windows with Super+Q"
 log_info "  3. Press Super to see dock and Activities"
 log_info "  4. Run 'myubuntu doctor' to check system health"
