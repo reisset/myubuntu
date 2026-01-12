@@ -13,6 +13,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
 
+## [0.5.0] - 2026-01-12
+
+### Added
+- **GitHub webapp** - PWA webapp for GitHub, bringing total to 5 webapps (YouTube, Claude, X, Grok, GitHub)
+- **Spotify component** - Spotify installation via Snap with automatic dock pinning
+- **Obsidian component** - Obsidian AppImage installer with automatic icon and desktop file setup
+
+### Fixed
+- CLI symlink creation path
+- Obsidian architecture detection for correct AppImage download
+- Spotify dock desktop file name (`spotify_spotify.desktop`)
+- Extension enabling logic improvements
+- Theme path configuration
+- Changed `return` to `exit` in install scripts for proper error handling
+- Added `--no-sandbox` flag to Obsidian AppImage for compatibility
+
 ## [0.4.0] - 2026-01-11
 
 ### Added
