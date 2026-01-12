@@ -44,8 +44,8 @@ if [ -z "$RELEASE_INFO" ]; then
     return 1
 fi
 
-# Extract AppImage download URL (x86_64)
-DOWNLOAD_URL=$(echo "$RELEASE_INFO" | grep -oP '"browser_download_url":\s*"\K[^"]+\.AppImage(?=")' | head -1)
+# Extract AppImage download URL (x86_64 - exclude arm64)
+DOWNLOAD_URL=$(echo "$RELEASE_INFO" | grep -oP '"browser_download_url":\s*"\K[^"]+\.AppImage(?=")' | grep -v 'arm64' | head -1)
 
 if [ -z "$DOWNLOAD_URL" ]; then
     log_error "Could not find AppImage download URL"
@@ -64,15 +64,15 @@ fi
 chmod +x "$APPIMAGE_PATH"
 log_info "Obsidian AppImage installed to $APPIMAGE_PATH"
 
-# Download icon
-ICON_URL="https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/obsidian.png"
+# Download icon from Flathub (reliable source)
+ICON_URL="https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/md.obsidian.Obsidian.png"
 ICON_PATH="$ICON_DIR/obsidian.png"
 
 log_info "Downloading Obsidian icon..."
 if curl -Lfs -o "$ICON_PATH" "$ICON_URL"; then
     log_info "Icon installed"
 else
-    log_warn "Could not download icon, using fallback"
+    log_warn "Could not download icon"
 fi
 
 # Create desktop entry

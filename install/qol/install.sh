@@ -32,7 +32,7 @@ FAVORITE_APPS=()
 DESIRED_APPS=(
     "brave-browser.desktop"
     "code.desktop"
-    "spotify.desktop"
+    "spotify_spotify.desktop"
     "org.gnome.Nautilus.desktop"
     "obsidian.desktop"
 )

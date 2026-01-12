@@ -125,11 +125,52 @@ safe_gsettings() {
     return 0
 }
 
+# Remove an extension from a gsettings array
+remove_from_extension_array() {
+    local key=$1
+    local ext_uuid=$2
+    local current=$(gsettings get org.gnome.shell "$key")
+
+    # If not in array, nothing to do
+    if [[ "$current" != *"'$ext_uuid'"* ]]; then
+        return 0
+    fi
+
+    # Remove the extension: strip brackets, split by comma, filter, rejoin
+    local inner="${current#[}"
+    inner="${inner%]}"
+
+    local new_items=""
+    local IFS=','
+    for item in $inner; do
+        # Trim whitespace and quotes
+        item=$(echo "$item" | xargs)
+        item="${item#\'}"
+        item="${item%\'}"
+        if [[ -n "$item" && "$item" != "$ext_uuid" ]]; then
+            if [[ -n "$new_items" ]]; then
+                new_items="$new_items, '$item'"
+            else
+                new_items="'$item'"
+            fi
+        fi
+    done
+
+    if [[ -n "$new_items" ]]; then
+        gsettings set org.gnome.shell "$key" "[$new_items]"
+    else
+        gsettings set org.gnome.shell "$key" "@as []"
+    fi
+}
+
 # Enable a GNOME extension by directly modifying gsettings array
 # This is more reliable than gnome-extensions enable which can fail silently
 enable_extension() {
     local ext_uuid=$1
     local current=$(gsettings get org.gnome.shell enabled-extensions)
+
+    # Remove from disabled-extensions if present
+    remove_from_extension_array "disabled-extensions" "$ext_uuid"
 
     # Check if already enabled
     if [[ "$current" == *"'$ext_uuid'"* ]]; then
@@ -138,10 +179,8 @@ enable_extension() {
 
     # Add to enabled-extensions array
     if [[ "$current" == "@as []" ]]; then
-        # Empty array
         gsettings set org.gnome.shell enabled-extensions "['$ext_uuid']"
     else
-        # Append to existing array
         local new_array="${current%]}, '$ext_uuid']"
         gsettings set org.gnome.shell enabled-extensions "$new_array"
     fi
@@ -150,14 +189,16 @@ enable_extension() {
 # Disable a GNOME extension by directly modifying gsettings array
 disable_extension() {
     local ext_uuid=$1
-    local current=$(gsettings get org.gnome.shell disabled-extensions)
 
-    # Check if already disabled
+    # Remove from enabled-extensions first
+    remove_from_extension_array "enabled-extensions" "$ext_uuid"
+
+    # Add to disabled-extensions
+    local current=$(gsettings get org.gnome.shell disabled-extensions)
     if [[ "$current" == *"'$ext_uuid'"* ]]; then
         return 0
     fi
 
-    # Add to disabled-extensions array
     if [[ "$current" == "@as []" ]]; then
         gsettings set org.gnome.shell disabled-extensions "['$ext_uuid']"
     else
