@@ -6,11 +6,12 @@ Transforms a fresh Ubuntu install into a personalized, Omakub-inspired desktop. 
 
 ## Features
 
-- **Omakub-style Desktop** - Dock only in overview (press Super), 7 GNOME extensions, UI refinements
+- **Omakub-style Desktop** - Dock only in overview (press Super), 8 GNOME extensions, UI refinements
 - **Orchis Purple Theme** - Dark mode, Yaru-purple GTK + Orchis shell theme, custom wallpaper
 - **Ulauncher** - Fast launcher (Super+Space) with Wayland support
 - **Webapps** - Brave browser + PWA webapps (YouTube, Claude, X, Grok, GitHub) as desktop applications
 - **Window Tiling** - Tactile grid-based tiling (Super+T), close with Super+Q
+- **Window Focus** - Directional focus navigation with Super+Alt+Arrow keys
 - **Nerd Fonts** - JetBrains Mono Nerd Font installed globally (VS Code, terminal, all apps)
 - **Quality of Life** - Centered windows, night light, pinned apps, Nautilus tweaks
 - **myubuntu CLI** - Health check (`myubuntu doctor`) and shortcuts reference (`myubuntu keys`)
@@ -32,7 +33,7 @@ Log out and back in to see all changes.
 | Component | What it installs |
 |-----------|------------------|
 | **shortcuts** | Super+Space for Ulauncher, Super+Q to close windows, workspace switching |
-| **extensions** | 7 GNOME Shell extensions (Just Perfection, Tactile, Blur my Shell, Space Bar, User Themes, AppIndicator, Alphabetical App Grid). Disables ubuntu-dock for Omakub-style behavior. |
+| **extensions** | 8 GNOME Shell extensions (Just Perfection, Tactile, Blur my Shell, Space Bar, User Themes, AppIndicator, Alphabetical App Grid, Focus Changer). Disables ubuntu-dock for Omakub-style behavior. |
 | **ulauncher** | Ulauncher from PPA with Wayland support, auto-start daemon |
 | **webapps** | Brave browser from official apt repo + 5 PWA webapps (YouTube, Claude, X, Grok, GitHub) as desktop applications with icons |
 | **theming** | Yaru-purple GTK theme (built-in), Orchis-Purple-Dark shell theme, wallpaper, dark mode, purple accent |

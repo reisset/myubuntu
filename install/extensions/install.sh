@@ -32,6 +32,7 @@ EXTENSIONS=(
     "tactile@lundal.io|Tactile|4548"
     "space-bar@luchrioh|Space Bar|5090"
     "AlphabeticalAppGrid@stuarthayhurst|Alphabetical App Grid|4238"
+    "focus-changer@heartmire|Focus Changer|4627"
 )
 
 # Check if GNOME Shell is available

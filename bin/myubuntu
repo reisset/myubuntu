@@ -266,6 +266,13 @@ run_keys() {
     echo "  Super+T,T         Toggle maximize current window"
     echo ""
 
+    echo -e "${GREEN}Window Focus (Super+Alt+Arrows)${NC}"
+    echo "  Super+Alt+Left    Focus window to the left"
+    echo "  Super+Alt+Right   Focus window to the right"
+    echo "  Super+Alt+Up      Focus window above"
+    echo "  Super+Alt+Down    Focus window below"
+    echo ""
+
     echo -e "${GREEN}Workspaces${NC}"
     echo "  Ctrl+Alt+1-4      Switch to workspace 1-4"
     echo "  Ctrl+Alt+Up       Move to workspace above"

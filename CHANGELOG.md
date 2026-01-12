@@ -13,6 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Additional GNOME extensions (optional)
 - Cross-machine config sync workflow
 
+## [0.6.0] - 2026-01-12
+
+### Added
+- **Focus Changer extension** - Directional window focus navigation (8th extension)
+  - Super+Alt+Left/Right/Up/Down to focus windows in that direction
+  - Works across monitors in multi-monitor setups
+
 ## [0.5.0] - 2026-01-12
 
 ### Added

@@ -81,9 +81,21 @@ log_info "Configuring Alphabetical App Grid..."
 ext_gsettings "AlphabeticalAppGrid@stuarthayhurst" \
     "org.gnome.shell.extensions.AlphabeticalAppGrid" "folder-order-position" "'end'"
 
+# Focus Changer - Directional window focus
+log_info "Configuring Focus Changer (directional window focus)..."
+ext_gsettings "focus-changer@heartmire" \
+    "org.gnome.shell.extensions.focus-changer" "focus-left" "['<Super><Alt>Left']"
+ext_gsettings "focus-changer@heartmire" \
+    "org.gnome.shell.extensions.focus-changer" "focus-right" "['<Super><Alt>Right']"
+ext_gsettings "focus-changer@heartmire" \
+    "org.gnome.shell.extensions.focus-changer" "focus-up" "['<Super><Alt>Up']"
+ext_gsettings "focus-changer@heartmire" \
+    "org.gnome.shell.extensions.focus-changer" "focus-down" "['<Super><Alt>Down']"
+
 log_info "Extension configuration complete!"
 log_info ""
 log_info "Notes:"
 log_info "  - Tactile: Press Super+T to activate window tiling grid"
+log_info "  - Focus Changer: Super+Alt+Arrows for directional window focus"
 log_info "  - Just Perfection: Animation speed set to 2x"
 log_info "  - Changes may require logging out and back in to take effect"
