@@ -81,7 +81,7 @@ cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
 Name=Obsidian
 Comment=Knowledge base and note-taking
-Exec=$APPIMAGE_PATH %u
+Exec=$APPIMAGE_PATH --no-sandbox %u
 Icon=obsidian
 Type=Application
 Categories=Office;TextEditor;
