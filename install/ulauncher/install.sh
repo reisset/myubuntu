@@ -17,7 +17,7 @@ if command -v ulauncher &> /dev/null; then
     log_info "Ulauncher is already installed ($(ulauncher --version 2>/dev/null || echo 'version unknown'))"
     if ! confirm "Install/configure Ulauncher?"; then
         log_info "Skipping Ulauncher installation"
-        return 0
+        exit 0
     fi
 fi
 

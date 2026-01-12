@@ -14,7 +14,7 @@ log_info "Installing Obsidian..."
 
 # Check dependencies
 if ! check_dependency curl; then
-    return 1
+    exit 1
 fi
 
 # Installation paths
@@ -27,7 +27,7 @@ ICON_DIR="$HOME/.local/share/icons/hicolor/512x512/apps"
 # Check if already installed
 if [ -f "$APPIMAGE_PATH" ]; then
     log_info "Obsidian is already installed at $APPIMAGE_PATH"
-    return 0
+    exit 0
 fi
 
 # Create directories
@@ -41,7 +41,7 @@ RELEASE_INFO=$(curl -sf "https://api.github.com/repos/obsidianmd/obsidian-releas
 
 if [ -z "$RELEASE_INFO" ]; then
     log_error "Failed to fetch Obsidian release info from GitHub"
-    return 1
+    exit 1
 fi
 
 # Extract AppImage download URL (x86_64 - exclude arm64)
@@ -49,7 +49,7 @@ DOWNLOAD_URL=$(echo "$RELEASE_INFO" | grep -oP '"browser_download_url":\s*"\K[^"
 
 if [ -z "$DOWNLOAD_URL" ]; then
     log_error "Could not find AppImage download URL"
-    return 1
+    exit 1
 fi
 
 # Download AppImage
@@ -57,7 +57,7 @@ log_info "Downloading Obsidian AppImage..."
 if ! curl -Lf -o "$APPIMAGE_PATH" "$DOWNLOAD_URL"; then
     log_error "Failed to download Obsidian AppImage"
     rm -f "$APPIMAGE_PATH"
-    return 1
+    exit 1
 fi
 
 # Make executable

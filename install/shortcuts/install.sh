@@ -17,7 +17,7 @@ log_info "Installing keyboard shortcuts..."
 # Check if dconf is available
 if ! command -v dconf &> /dev/null; then
     log_error "dconf not found. Please install: sudo apt install dconf-cli"
-    return 1
+    exit 1
 fi
 
 # Create backup directory

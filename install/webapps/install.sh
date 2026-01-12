@@ -17,7 +17,7 @@ if [ -f "$HOME/.local/share/applications/brave-agimnkijcaahngcdmfeangaknmldooml-
     log_info "Webapps are already installed"
     if ! confirm "Reinstall webapps?"; then
         log_info "Skipping webapps installation"
-        return 0
+        exit 0
     fi
 fi
 

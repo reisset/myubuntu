@@ -16,13 +16,13 @@ log_info "Installing Spotify..."
 if ! command -v snap &>/dev/null; then
     log_error "Snap is not installed. Snap is required for Spotify installation."
     log_info "Install snap with: sudo apt install snapd"
-    return 1
+    exit 1
 fi
 
 # Check if already installed
 if snap list spotify &>/dev/null 2>&1; then
     log_info "Spotify is already installed via Snap"
-    return 0
+    exit 0
 fi
 
 # Install Spotify
@@ -31,7 +31,7 @@ if sudo snap install spotify; then
     log_info "Spotify installed successfully!"
 else
     log_error "Failed to install Spotify"
-    return 1
+    exit 1
 fi
 
 log_info ""

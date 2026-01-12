@@ -18,7 +18,7 @@ FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/$FONT_VERSIO
 if fc-list : family | grep -qi "JetBrainsMono Nerd Font"; then
     log_info "JetBrainsMono Nerd Font is already installed"
     if ! confirm "Reinstall JetBrainsMono Nerd Font?"; then
-        return 0
+        exit 0
     fi
 fi
 
@@ -50,5 +50,5 @@ if curl -fL \
 else
     log_error "Failed to download font"
     log_warn "You can manually download from: $FONT_URL"
-    return 1
+    exit 1
 fi

@@ -14,11 +14,11 @@ log_info "Installing GNOME extensions..."
 
 # Check dependencies
 if ! check_dependency curl; then
-    return 1
+    exit 1
 fi
 
 if ! check_dependency python3; then
-    return 1
+    exit 1
 fi
 
 # Extension details
@@ -37,7 +37,7 @@ EXTENSIONS=(
 # Check if GNOME Shell is available
 if ! command -v gnome-shell &> /dev/null; then
     log_error "gnome-shell not found. Are you running GNOME?"
-    return 1
+    exit 1
 fi
 
 # Get GNOME Shell version
@@ -85,7 +85,7 @@ install_extension() {
             log_info "Enabling $ext_name..."
             enable_extension "$ext_uuid"
 
-            return 0
+            exit 0
         fi
 
         # Query API for download URL
@@ -108,7 +108,7 @@ install_extension() {
                         # Enable the extension via gsettings (more reliable)
                         enable_extension "$ext_uuid"
 
-                        return 0
+                        exit 0
                     fi
                     rm -f "$temp_zip"
                 fi
@@ -120,7 +120,7 @@ install_extension() {
     done
 
     log_warn "Failed to install $ext_name after $max_attempts attempts"
-    return 1
+    exit 1
 }
 
 # Track installation failures

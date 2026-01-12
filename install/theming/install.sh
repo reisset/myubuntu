@@ -48,7 +48,7 @@ safe_gsettings org.gnome.desktop.interface cursor-theme 'Yaru'
 
 # Install Orchis shell theme
 SHELL_THEME_NAME="Orchis-Purple-Dark"
-THEME_DIR="$HOME/.local/share/themes"
+THEME_DIR="$HOME/.themes"
 ORCHIS_REPO="https://github.com/vinceliuice/Orchis-theme.git"
 TEMP_DIR="/tmp/orchis-theme-$$"
 
