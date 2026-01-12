@@ -124,3 +124,44 @@ safe_gsettings() {
     gsettings set "$schema" "$key" "$value"
     return 0
 }
+
+# Enable a GNOME extension by directly modifying gsettings array
+# This is more reliable than gnome-extensions enable which can fail silently
+enable_extension() {
+    local ext_uuid=$1
+    local current=$(gsettings get org.gnome.shell enabled-extensions)
+
+    # Check if already enabled
+    if [[ "$current" == *"'$ext_uuid'"* ]]; then
+        return 0
+    fi
+
+    # Add to enabled-extensions array
+    if [[ "$current" == "@as []" ]]; then
+        # Empty array
+        gsettings set org.gnome.shell enabled-extensions "['$ext_uuid']"
+    else
+        # Append to existing array
+        local new_array="${current%]}, '$ext_uuid']"
+        gsettings set org.gnome.shell enabled-extensions "$new_array"
+    fi
+}
+
+# Disable a GNOME extension by directly modifying gsettings array
+disable_extension() {
+    local ext_uuid=$1
+    local current=$(gsettings get org.gnome.shell disabled-extensions)
+
+    # Check if already disabled
+    if [[ "$current" == *"'$ext_uuid'"* ]]; then
+        return 0
+    fi
+
+    # Add to disabled-extensions array
+    if [[ "$current" == "@as []" ]]; then
+        gsettings set org.gnome.shell disabled-extensions "['$ext_uuid']"
+    else
+        local new_array="${current%]}, '$ext_uuid']"
+        gsettings set org.gnome.shell disabled-extensions "$new_array"
+    fi
+}

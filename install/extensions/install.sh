@@ -46,12 +46,9 @@ log_info "Detected GNOME Shell version: $GNOME_VERSION"
 
 # Disable Ubuntu default extensions (Omakub-style: dock only in overview)
 log_info "Disabling Ubuntu default extensions..."
-gnome-extensions disable ubuntu-dock@ubuntu.com 2>/dev/null || true
-sleep 0.3
-gnome-extensions disable tiling-assistant@ubuntu.com 2>/dev/null || true
-sleep 0.3
-gnome-extensions disable ding@rastersoft.com 2>/dev/null || true
-sleep 0.3
+disable_extension "ubuntu-dock@ubuntu.com"
+disable_extension "tiling-assistant@ubuntu.com"
+disable_extension "ding@rastersoft.com"
 log_info "Ubuntu dock disabled (dock will only appear in overview)"
 
 # Extension Manager removed - using gnome-extensions CLI only
@@ -84,12 +81,9 @@ install_extension() {
         if gnome-extensions list 2>/dev/null | grep -q "^${ext_uuid}$"; then
             log_info "$ext_name is already installed"
 
-            # Enable if disabled
-            if ! gnome-extensions info "$ext_uuid" 2>/dev/null | grep -q "State: ENABLED"; then
-                log_info "Enabling $ext_name..."
-                gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
-                sleep 0.3
-            fi
+            # Enable extension via gsettings (more reliable than gnome-extensions enable)
+            log_info "Enabling $ext_name..."
+            enable_extension "$ext_uuid"
 
             return 0
         fi
@@ -111,9 +105,8 @@ install_extension() {
                         log_info "$ext_name installed successfully"
                         rm -f "$temp_zip"
 
-                        # Enable the extension
-                        gnome-extensions enable "$ext_uuid" 2>/dev/null || log_warn "Could not enable $ext_name (may need logout)"
-                        sleep 0.3
+                        # Enable the extension via gsettings (more reliable)
+                        enable_extension "$ext_uuid"
 
                         return 0
                     fi
