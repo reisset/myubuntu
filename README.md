@@ -1,3 +1,5 @@
+# This repo will be/is archived. I haved decided that it was no longer worth the effort as I have moved on from GNOME/Ubuntu. The rest of my proejcts will be more distro-agnostic in the future.
+
 # myubuntu
 
 > Lightweight, modular Ubuntu GNOME desktop bootstrap script
